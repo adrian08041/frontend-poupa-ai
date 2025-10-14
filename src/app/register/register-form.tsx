@@ -17,11 +17,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -34,7 +37,6 @@ export function RegisterForm() {
     },
   });
 
-  // Verificar força da senha
   const password = form.watch("password");
   const getPasswordStrength = (pass: string) => {
     if (!pass) return { strength: 0, label: "", color: "" };
@@ -63,20 +65,34 @@ export function RegisterForm() {
     try {
       const { confirmPassword, ...registerData } = data;
 
-      console.log("Register data:", registerData);
+      console.log("📤 Enviando dados para o backend:", registerData);
 
-      // Simulação de chamada de API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users`, // <- rota real do seu backend
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(registerData),
+        }
+      );
 
-      console.log("Cadastro realizado com sucesso!");
-      // Redirecionar para login ou dashboard
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Erro ao cadastrar usuário");
+      }
+
+      const result = await response.json();
+      console.log("✅ Cadastro realizado com sucesso:", result);
+
+      router.push("/login");
+    } catch (error: any) {
+      console.error("❌ Erro no cadastro:", error.message || error);
     } finally {
       setIsLoading(false);
     }
   }
-
   return (
     <div className="w-full max-w-md space-y-8">
       <div className="space-y-4">

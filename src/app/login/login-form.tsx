@@ -16,8 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,15 +35,14 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      // Simulação de chamada de API
+      
       console.log("Login data:", data);
-
-      // Aqui você implementaria a lógica de autenticação
-      // const response = await signIn(data);
-
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       console.log("Login bem-sucedido!");
+
+      // Redirecionamento para a página inicial
+      router.push("/"); // '/' é a home
     } catch (error) {
       console.error("Erro no login:", error);
     } finally {

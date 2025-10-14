@@ -10,12 +10,12 @@ export class AuthError extends Error {
   }
 }
 
-// Função de Login (já existe)
+
 export async function signIn(credentials: LoginFormData) {
-  // ... código existente
+  
 }
 
-// Função de Registro (NOVA)
+
 export async function signUp(
   userData: Omit<RegisterFormData, "confirmPassword" | "acceptTerms">
 ) {
@@ -69,10 +69,6 @@ export async function checkEmailExists(email: string): Promise<boolean> {
     console.error("Erro ao verificar e-mail:", error);
     return false;
   }
-}
-
-export async function signInWithGoogle() {
-  window.location.href = `${API_BASE_URL}/auth/google`;
 }
 
 export async function signOut() {

@@ -30,7 +30,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Lado Direito - Ilustração (Desktop) */}
+      {/* Lado Direito  */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-background-01 from-[#0B0B0D] to-[#1a1a1d] relative overflow-hidden">
         <div className="relative w-full max-w-xl px-12">
           {/* Conteúdo Principal */}
@@ -117,7 +117,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Partículas decorativas */}
+          {/* Partículas  */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {[...Array(30)].map((_, i) => (
               <div
@@ -135,7 +135,7 @@ export default function RegisterPage() {
             ))}
           </div>
 
-          {/* Círculos decorativos */}
+          {/* Círculos  */}
           <div className="absolute top-10 right-10 w-32 h-32 bg-[#39BE00]/5 rounded-full blur-3xl" />
           <div className="absolute bottom-20 left-10 w-40 h-40 bg-[#39BE00]/5 rounded-full blur-3xl" />
         </div>
