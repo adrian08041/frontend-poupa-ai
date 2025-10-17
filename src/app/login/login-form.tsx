@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { loginSchema, type LoginFormData } from "@/lib/validator/auth";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ export function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -33,18 +34,62 @@ export function LoginForm() {
 
   async function onSubmit(data: LoginFormData) {
     setIsLoading(true);
+    setError(null);
 
     try {
-      
-      console.log("Login data:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log("📤 Enviando login para o backend:", data.email);
 
-      console.log("Login bem-sucedido!");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
-      // Redirecionamento para a página inicial
-      router.push("/"); // '/' é a home
-    } catch (error) {
-      console.error("Erro no login:", error);
+      let result = null;
+      try {
+        result = await response.json();
+      } catch {
+        // Se o backend não retorna JSON (ex: texto puro)
+        console.warn("⚠️ Resposta não era JSON. Usando texto.");
+      }
+
+      if (!response.ok) {
+        // Garante que mensagens de erro sejam tratadas corretamente
+        const message =
+          result?.message ||
+          result?.error ||
+          (typeof result === "string" ? result : null) ||
+          "Credenciais inválidas.";
+        throw new Error(message);
+      }
+
+      console.log("✅ Login bem-sucedido:", result);
+
+      // Salvar tokens — independentemente dos nomes exatos
+      const accessToken = result?.accessToken || result?.authToken;
+      const refreshToken = result?.refreshToken;
+
+      if (accessToken) {
+        localStorage.setItem("access_token", accessToken);
+        console.log("🔑 Access token salvo no localStorage");
+      }
+      if (refreshToken) {
+        localStorage.setItem("refresh_token", refreshToken);
+        console.log("🔄 Refresh token salvo no localStorage");
+      }
+
+      // Redirecionar
+      router.push("/transactions");
+    } catch (err: any) {
+      console.error("❌ Erro no login:", err);
+      const message =
+        err?.message || "Erro inesperado ao fazer login. Tente novamente.";
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -68,6 +113,13 @@ export function LoginForm() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Mensagem de erro */}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+                <p className="text-red-500 text-sm">{error}</p>
+              </div>
+            )}
+
             <FormField
               control={form.control}
               name="email"
@@ -81,6 +133,7 @@ export function LoginForm() {
                       type="email"
                       placeholder="Digite seu e-mail"
                       disabled={isLoading}
+                      autoComplete="email"
                       className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                       {...field}
                     />
@@ -102,6 +155,7 @@ export function LoginForm() {
                         type={showPassword ? "text" : "password"}
                         placeholder="Digite sua senha"
                         disabled={isLoading}
+                        autoComplete="current-password"
                         className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 pr-12"
                         {...field}
                       />
@@ -129,7 +183,14 @@ export function LoginForm() {
               disabled={isLoading}
               className="w-full h-14 bg-[#39BE00] hover:bg-[#2da000] text-white text-base font-medium rounded transition-colors"
             >
-              {isLoading ? "Entrando..." : "Entrar"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                "Entrar"
+              )}
             </Button>
           </form>
         </Form>
@@ -142,7 +203,7 @@ export function LoginForm() {
             Esqueceu sua senha?
           </Link>
 
-          <p className="text-base text-gray-400 ">
+          <p className="text-base text-gray-400">
             Não tem cadastro?{" "}
             <Link
               href="/register"
