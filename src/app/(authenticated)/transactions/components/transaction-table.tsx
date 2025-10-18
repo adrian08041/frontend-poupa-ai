@@ -54,8 +54,8 @@ export function TransactionTable({
 
   if (transactions.length === 0) {
     return (
-      <div className="rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#0a0a0a] p-12 text-center">
-        <p className="text-zinc-400 text-lg">
+      <div className="rounded-lg border border-gray-200 dark:border-dark-gray bg-white dark:bg-background-02 p-12 text-center">
+        <p className="text-gray text-lg">
           Nenhuma transação encontrada.
           <br />
           <span className="text-sm">
@@ -67,29 +67,29 @@ export function TransactionTable({
   }
 
   return (
-    <div className="rounded-lg border border-[rgba(255,255,255,0.08)] bg-[#0a0a0a] overflow-hidden">
+    <div className="rounded-lg border border-gray-200 dark:border-dark-gray bg-white dark:bg-background-02 overflow-hidden">
       <Table>
-        <TableHeader className="bg-[#141414]">
-          <TableRow className="border-[rgba(255,255,255,0.08)] hover:bg-transparent">
-            <TableHead className="text-zinc-300 font-bold text-sm">
+        <TableHeader className="bg-gray-50 dark:bg-background-02">
+          <TableRow className="border-gray-200 dark:border-dark-gray hover:bg-transparent">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
               Descrição
             </TableHead>
-            <TableHead className="text-zinc-300 font-bold text-sm">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
               Tipo
             </TableHead>
-            <TableHead className="text-zinc-300 font-bold text-sm">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
               Categoria
             </TableHead>
-            <TableHead className="text-zinc-300 font-bold text-sm">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
               Método
             </TableHead>
-            <TableHead className="text-zinc-300 font-bold text-sm">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
               Data
             </TableHead>
-            <TableHead className="text-zinc-300 font-bold text-sm text-right">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm text-right">
               Valor
             </TableHead>
-            <TableHead className="text-zinc-300 font-bold text-sm text-right">
+            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm text-right">
               Ações
             </TableHead>
           </TableRow>
@@ -98,9 +98,9 @@ export function TransactionTable({
           {sortedTransactions.map((transaction) => (
             <TableRow
               key={transaction.id}
-              className="border-[rgba(255,255,255,0.08)] hover:bg-[#141414] transition-colors"
+              className="border-gray-200 dark:border-dark-gray hover:bg-gray-50 dark:hover:bg-dark-gray transition-colors"
             >
-              <TableCell className="font-medium text-white">
+              <TableCell className="font-medium text-gray-900 dark:text-white">
                 {transaction.description}
               </TableCell>
               <TableCell>
@@ -111,24 +111,24 @@ export function TransactionTable({
                   {TRANSACTION_TYPE_LABELS[transaction.type]}
                 </Badge>
               </TableCell>
-              <TableCell className="text-zinc-300">
+              <TableCell className="text-gray dark:text-light-gray">
                 {transaction.category
                   ? CATEGORY_LABELS[transaction.category]
                   : "-"}
               </TableCell>
-              <TableCell className="text-zinc-300">
+              <TableCell className="text-gray dark:text-light-gray">
                 {PAYMENT_METHOD_LABELS[transaction.paymentMethod]}
               </TableCell>
-              <TableCell className="text-zinc-300">
+              <TableCell className="text-gray dark:text-light-gray">
                 {formatDateShort(transaction.date)}
               </TableCell>
               <TableCell
                 className={`text-right font-semibold text-base ${
                   transaction.type === "INCOME"
-                    ? "text-green-500"
+                    ? "text-green"
                     : transaction.type === "EXPENSE"
-                    ? "text-red-500"
-                    : "text-blue-500"
+                    ? "text-red"
+                    : "text-green"
                 }`}
               >
                 {formatCurrency(transaction.amount)}

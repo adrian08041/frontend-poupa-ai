@@ -85,10 +85,8 @@ export function TransactionForm({
 
   const selectedType = form.watch("type");
 
-  // ✅ Mostra campo de categoria apenas para EXPENSE
   const showCategory = selectedType === "EXPENSE";
 
-  // ✅ Define quais categorias mostrar baseado no tipo
   const getAvailableCategories = () => {
     if (selectedType === "EXPENSE") {
       return enumData.categories.filter((cat) =>
@@ -117,21 +115,18 @@ export function TransactionForm({
 
   const availableCategories = getAvailableCategories();
 
-  // Limpa a categoria quando o tipo não for EXPENSE
   useEffect(() => {
     if (selectedType !== "EXPENSE") {
       form.setValue("category", undefined);
     }
   }, [selectedType, form]);
 
-  // Busca enums do backend
   useEffect(() => {
     if (open) {
       getEnums()
         .then((data) => {
           console.log("✅ Enums recebidos do backend:", data);
 
-          // Normaliza a resposta inline
           const normalized = {
             transactionTypes: data.transactionTypes || [],
             categories: data.transactionCategories || [],
@@ -145,7 +140,6 @@ export function TransactionForm({
         .catch((err) => {
           console.error("❌ Erro ao carregar enums:", err);
 
-          // ✅ Fallback com TODAS as categorias que o backend aceita
           const fallback = {
             transactionTypes: ["INCOME", "EXPENSE", "INVESTMENT"],
             categories: [
@@ -181,18 +175,13 @@ export function TransactionForm({
   async function handleSubmit(data: CreateTransactionData) {
     setIsLoading(true);
     try {
-      // Prepara os dados para envio
       let category = data.category;
 
-      // ✅ Define categoria baseada no tipo
       if (data.type === "EXPENSE") {
-        // Para despesas, usa a categoria selecionada ou OUTROS
         category = data.category || "OUTROS";
       } else if (data.type === "INCOME") {
-        // Para receitas, usa categoria padrão
         category = "SALARIO";
       } else if (data.type === "INVESTMENT") {
-        // Para investimentos, usa categoria padrão
         category = "INVESTIMENTO";
       }
 
@@ -245,23 +234,23 @@ export function TransactionForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {isEditing ? (
-          <Button variant="ghost" size="icon" className="hover:bg-zinc-800">
-            <Pencil className="h-4 w-4 text-zinc-400 hover:text-white" />
+          <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-dark-gray">
+            <Pencil className="h-4 w-4 text-gray dark:text-light-gray hover:text-green" />
           </Button>
         ) : (
-          <Button className="bg-[#39BE00] hover:bg-[#2da000] text-white">
+          <Button className="bg-green hover:bg-green/90 text-white">
             <Plus className="mr-2 h-4 w-4" />
             Nova Transação
           </Button>
         )}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[500px] bg-[#141414] border-[rgba(255,255,255,0.08)]">
+      <DialogContent className="sm:max-w-[500px] bg-white dark:bg-background-02 border-gray-200 dark:border-dark-gray">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-white">
+          <DialogTitle className="text-xl font-bold text-gray-900 dark:text-white">
             {isEditing ? "Editar Transação" : "Nova Transação"}
           </DialogTitle>
-          <DialogDescription className="text-zinc-500">
+          <DialogDescription className="text-gray">
             {isEditing
               ? "Atualize as informações da transação"
               : "Preencha os dados para adicionar uma nova transação"}
@@ -279,18 +268,16 @@ export function TransactionForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-400">
-                    Descrição
-                  </FormLabel>
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">Descrição</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ex: Almoço, Salário, Investimento..."
                       disabled={isLoading}
-                      className="h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
+                      className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white placeholder:text-gray"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-500 text-sm" />
+                  <FormMessage className="text-red text-sm" />
                 </FormItem>
               )}
             />
@@ -301,7 +288,7 @@ export function TransactionForm({
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-400">
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
                     Valor (R$)
                   </FormLabel>
                   <FormControl>
@@ -311,7 +298,7 @@ export function TransactionForm({
                       min="0"
                       placeholder="0,00"
                       disabled={isLoading}
-                      className="h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
+                      className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white placeholder:text-gray"
                       {...field}
                       value={field.value || ""}
                       onChange={(e) => {
@@ -320,7 +307,7 @@ export function TransactionForm({
                       }}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-500 text-sm" />
+                  <FormMessage className="text-red text-sm" />
                 </FormItem>
               )}
             />
@@ -331,14 +318,14 @@ export function TransactionForm({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-400">Tipo</FormLabel>
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">Tipo</FormLabel>
                   <Select
                     disabled={isLoading}
                     onValueChange={field.onChange}
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="h-12 bg-white border-gray-200 text-gray-900">
+                      <SelectTrigger className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white">
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                     </FormControl>
@@ -368,7 +355,7 @@ export function TransactionForm({
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm text-gray-400">
+                    <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
                       Categoria
                     </FormLabel>
                     <Select
@@ -377,7 +364,7 @@ export function TransactionForm({
                       value={field.value || ""}
                     >
                       <FormControl>
-                        <SelectTrigger className="h-12 bg-white border-gray-200 text-gray-900">
+                        <SelectTrigger className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white">
                           <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                       </FormControl>
@@ -395,7 +382,7 @@ export function TransactionForm({
                         )}
                       </SelectContent>
                     </Select>
-                    <FormMessage className="text-red-500 text-sm" />
+                    <FormMessage className="text-red text-sm" />
                   </FormItem>
                 )}
               />
@@ -407,7 +394,7 @@ export function TransactionForm({
               name="paymentMethod"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-400">
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
                     Método de Pagamento
                   </FormLabel>
                   <Select
@@ -416,7 +403,7 @@ export function TransactionForm({
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="h-12 bg-white border-gray-200 text-gray-900">
+                      <SelectTrigger className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white">
                         <SelectValue placeholder="Selecione o método" />
                       </SelectTrigger>
                     </FormControl>
@@ -434,7 +421,7 @@ export function TransactionForm({
                       )}
                     </SelectContent>
                   </Select>
-                  <FormMessage className="text-red-500 text-sm" />
+                  <FormMessage className="text-red text-sm" />
                 </FormItem>
               )}
             />
@@ -445,16 +432,16 @@ export function TransactionForm({
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-400">Data</FormLabel>
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">Data</FormLabel>
                   <FormControl>
                     <Input
                       type="date"
                       disabled={isLoading}
-                      className="h-12 bg-white border-gray-200 text-gray-900"
+                      className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-500 text-sm" />
+                  <FormMessage className="text-red text-sm" />
                 </FormItem>
               )}
             />
@@ -465,14 +452,14 @@ export function TransactionForm({
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isLoading}
-                className="flex-1 h-12 border-gray-300 text-white hover:bg-[#1f1f21]"
+                className="flex-1 h-12 border-gray-200 dark:border-dark-gray hover:bg-gray-50 dark:hover:bg-dark-gray"
               >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 h-12 bg-[#39BE00] hover:bg-[#2da000] text-white"
+                className="flex-1 h-12 bg-green hover:bg-green/90 text-white"
               >
                 {isLoading ? (
                   <>

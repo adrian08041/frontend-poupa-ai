@@ -90,74 +90,72 @@ export default function TransactionsPage() {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-[#39BE00] mx-auto" />
-          <p className="text-zinc-400">Carregando transações...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-green mx-auto" />
+          <p className="text-gray dark:text-light-gray">Carregando transações...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background-01 text-white">
-      <div className="container mx-auto py-8 px-4 max-w-7xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Transações</h1>
-            <p className="text-zinc-400">
-              Gerencie suas entradas, saídas e investimentos
-            </p>
-          </div>
-
-          <div className="flex gap-3">
-            <Button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              variant="default"
-              className="border-[rgba(255,255,255,0.08)] text-white hover:bg-[#1f1f21]"
-            >
-              <RefreshCw
-                className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
-              />
-              Atualizar
-            </Button>
-
-            <TransactionForm
-              onSuccess={loadTransactions}
-              onSubmit={handleCreate}
-            />
-          </div>
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Transações</h1>
+          <p className="text-gray">
+            Gerencie suas entradas, saídas e investimentos
+          </p>
         </div>
 
-        {/* Erro */}
-        {error && (
-          <Alert className="mb-6 border-red-500/50 bg-red-500/10">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            <AlertTitle className="text-red-500">Erro</AlertTitle>
-            <AlertDescription className="text-red-400">
-              {error}
-            </AlertDescription>
-          </Alert>
-        )}
+        <div className="flex gap-3">
+          <Button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            variant="outline"
+            className="border-gray-200 dark:border-dark-gray hover:bg-gray-50 dark:hover:bg-dark-gray"
+          >
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            Atualizar
+          </Button>
 
-        {/* Tabela de Transações */}
-        <TransactionTable
-          transactions={transactions}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-          onRefresh={loadTransactions}
-        />
-
-        {/* Contador de transações */}
-        {transactions.length > 0 && (
-          <div className="mt-4 text-center">
-            <p className="text-sm text-zinc-500">
-              Total de {transactions.length}{" "}
-              {transactions.length === 1 ? "transação" : "transações"}
-            </p>
-          </div>
-        )}
+          <TransactionForm
+            onSuccess={loadTransactions}
+            onSubmit={handleCreate}
+          />
+        </div>
       </div>
+
+      {/* Erro */}
+      {error && (
+        <Alert className="mb-6 border-red bg-red/10">
+          <AlertCircle className="h-4 w-4 text-red" />
+          <AlertTitle className="text-red">Erro</AlertTitle>
+          <AlertDescription className="text-red">
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Tabela de Transações */}
+      <TransactionTable
+        transactions={transactions}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
+        onRefresh={loadTransactions}
+      />
+
+      {/* Contador de transações */}
+      {transactions.length > 0 && (
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray">
+            Total de {transactions.length}{" "}
+            {transactions.length === 1 ? "transação" : "transações"}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

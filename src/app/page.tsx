@@ -1,11 +1,6 @@
-import { LogoutButton } from "@/components/ui/logout-button";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="">
-      home page
-      <LogoutButton />
-    </div>
-  );
+  redirect("/dashboard");
 }
 

@@ -35,6 +35,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = getAuthToken();
 
   if (!token) {
+    // Redireciona para login se não tiver token
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
     throw new Error("Usuário não autenticado");
   }
 
@@ -47,11 +51,29 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     },
   });
 
+  // Se token inválido ou expirado (401), redireciona para login
+  if (response.status === 401) {
+    console.error("❌ Token inválido ou expirado");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+
+    throw new Error("Credenciais inválidas. Faça o login novamente");
+  }
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
     throw new Error(
       errorData?.message || `Erro na requisição: ${response.status}`
     );
+  }
+
+  // Se for DELETE sem conteúdo
+  if (response.status === 204 || options.method === "DELETE") {
+    return { success: true };
   }
 
   return response.json();
