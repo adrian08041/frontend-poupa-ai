@@ -54,12 +54,10 @@ export function LoginForm() {
       try {
         result = await response.json();
       } catch {
-        // Se o backend não retorna JSON (ex: texto puro)
         console.warn("⚠️ Resposta não era JSON. Usando texto.");
       }
 
       if (!response.ok) {
-        // Garante que mensagens de erro sejam tratadas corretamente
         const message =
           result?.message ||
           result?.error ||
@@ -70,7 +68,6 @@ export function LoginForm() {
 
       console.log("✅ Login bem-sucedido:", result);
 
-      // Salvar tokens — independentemente dos nomes exatos
       const accessToken = result?.accessToken || result?.authToken;
       const refreshToken = result?.refreshToken;
 
@@ -83,7 +80,6 @@ export function LoginForm() {
         console.log("🔄 Refresh token salvo no localStorage");
       }
 
-      // Redirecionar
       router.push("/transactions");
     } catch (err: any) {
       console.error("❌ Erro no login:", err);
@@ -125,16 +121,14 @@ export function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-400">
-                    E-mail
-                  </FormLabel>
+                  <FormLabel className="text-sm text-gray-">E-mail</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
                       placeholder="Digite seu e-mail"
                       disabled={isLoading}
                       autoComplete="email"
-                      className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                      className="h-14 bg-white border-gray text-gray placeholder:text-gray"
                       {...field}
                     />
                   </FormControl>
@@ -156,7 +150,7 @@ export function LoginForm() {
                         placeholder="Digite sua senha"
                         disabled={isLoading}
                         autoComplete="current-password"
-                        className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 pr-12"
+                        className="h-14 bg-white border-gray text-gray placeholder:text-gray pr-12"
                         {...field}
                       />
                       <button

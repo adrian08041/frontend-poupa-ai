@@ -16,6 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  CircleDollarSign,
+  MoreHorizontal,
+  CreditCard,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
 import { DeleteDialog } from "./delete-dialog";
 import { CreateTransactionData } from "@/lib/validator/transaction";
@@ -38,6 +45,35 @@ export function TransactionTable({
   const sortedTransactions = [...transactions].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+
+  // Função para retornar o ícone baseado no método de pagamento
+  const getPaymentIcon = (paymentMethod: string) => {
+    const iconClass = "w-4 h-4";
+
+    const iconMap: Record<string, JSX.Element> = {
+      PIX: <CircleDollarSign className={iconClass} />,
+      BOLETO: <CreditCard className={iconClass} />,
+      CARTAO: <CreditCard className={iconClass} />,
+      TRANSFERENCIA: <TrendingUp className={iconClass} />,
+      DINHEIRO: <Wallet className={iconClass} />,
+    };
+
+    return iconMap[paymentMethod] || <MoreHorizontal className={iconClass} />;
+  };
+
+  // Função para retornar a cor do ícone baseado no tipo (sem fundo)
+  const getIconColor = (type: string) => {
+    switch (type) {
+      case "INCOME":
+        return "text-green";
+      case "EXPENSE":
+        return "text-red";
+      case "INVESTMENT":
+        return "text-gray";
+      default:
+        return "text-gray";
+    }
+  };
 
   function getTypeVariant(type: Transaction["type"]) {
     switch (type) {
@@ -71,25 +107,25 @@ export function TransactionTable({
       <Table>
         <TableHeader className="bg-gray-50 dark:bg-background-02">
           <TableRow className="border-gray-200 dark:border-dark-gray hover:bg-transparent">
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm">
               Descrição
             </TableHead>
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm">
               Tipo
             </TableHead>
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm">
               Categoria
             </TableHead>
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm">
               Método
             </TableHead>
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm">
               Data
             </TableHead>
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm text-right">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm text-right">
               Valor
             </TableHead>
-            <TableHead className="text-gray-900 dark:text-light-gray font-bold text-sm text-right">
+            <TableHead className="text-gray dark:text-light-gray font-bold text-sm text-right">
               Ações
             </TableHead>
           </TableRow>
@@ -100,13 +136,18 @@ export function TransactionTable({
               key={transaction.id}
               className="border-gray-200 dark:border-dark-gray hover:bg-gray-50 dark:hover:bg-dark-gray transition-colors"
             >
-              <TableCell className="font-medium text-gray-900 dark:text-white">
-                {transaction.description}
+              <TableCell className="font-medium text-gray dark:text-white">
+                <div className="flex items-center gap-3">
+                  <div className={getIconColor(transaction.type)}>
+                    {getPaymentIcon(transaction.paymentMethod)}
+                  </div>
+                  <span>{transaction.description}</span>
+                </div>
               </TableCell>
               <TableCell>
                 <Badge
                   variant={getTypeVariant(transaction.type)}
-                  className="font-medium"
+                  className="font-medium "
                 >
                   {TRANSACTION_TYPE_LABELS[transaction.type]}
                 </Badge>

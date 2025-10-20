@@ -28,11 +28,10 @@ export const categoryEnum = z.enum(
 export const paymentMethodEnum = z.enum(
   [
     "PIX",
-    "CARTAO_CREDITO",
-    "CARTAO_DEBITO",
-    "DINHEIRO",
     "BOLETO",
+    "CARTAO",
     "TRANSFERENCIA",
+    "DINHEIRO",
   ],
   {
     errorMap: () => ({ message: "Método de pagamento inválido" }),

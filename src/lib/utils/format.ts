@@ -6,8 +6,7 @@ export function reaisToCents(reais: number): number {
   return Math.round(reais * 100);
 }
 
-export function formatCurrency(cents: number): string {
-  const reais = centsToReais(cents);
+export function formatCurrency(reais: number): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",

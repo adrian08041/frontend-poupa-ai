@@ -50,6 +50,7 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [displayValue, setDisplayValue] = useState("");
   const [enumData, setEnumData] = useState<{
     transactionTypes: string[];
     categories: string[];
@@ -69,7 +70,7 @@ export function TransactionForm({
           type: transaction.type,
           category: transaction.category || undefined,
           paymentMethod: transaction.paymentMethod,
-          amount: transaction.amount / 100,
+          amount: transaction.amount, // Já está em reais vindos do backend
           description: transaction.description,
           date: transaction.date.split("T")[0],
         }
@@ -121,6 +122,17 @@ export function TransactionForm({
     }
   }, [selectedType, form]);
 
+  // Inicializa displayValue quando editar uma transação
+  useEffect(() => {
+    if (transaction && transaction.amount > 0) {
+      const formatted = transaction.amount.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      setDisplayValue(formatted);
+    }
+  }, [transaction]);
+
   useEffect(() => {
     if (open) {
       getEnums()
@@ -158,11 +170,10 @@ export function TransactionForm({
             ],
             paymentMethods: [
               "PIX",
-              "CARTAO_CREDITO",
-              "CARTAO_DEBITO",
-              "DINHEIRO",
               "BOLETO",
+              "CARTAO",
               "TRANSFERENCIA",
+              "DINHEIRO",
             ],
           };
 
@@ -189,7 +200,7 @@ export function TransactionForm({
         type: data.type,
         category,
         paymentMethod: data.paymentMethod,
-        amount: Math.round(data.amount * 100), // Converte para centavos
+        amount: data.amount, // Já está em reais, o backend vai converter
         description: data.description,
         date: data.date,
       };
@@ -200,6 +211,7 @@ export function TransactionForm({
       await onSubmit(payload);
       setOpen(false);
       form.reset();
+      setDisplayValue(''); // Limpa o valor formatado
       onSuccess();
     } catch (error) {
       console.error("❌ Erro ao salvar transação:", error);
@@ -211,12 +223,14 @@ export function TransactionForm({
     }
   }
 
-  // Formata labels para exibição
   const formatLabel = (value: string) => {
-    // Casos especiais
     const specialCases: Record<string, string> = {
-      CARTAO_CREDITO: "Cartão de Crédito",
-      CARTAO_DEBITO: "Cartão de Débito",
+      // Tipos de transação
+      INCOME: "Receita",
+      EXPENSE: "Despesa",
+      INVESTMENT: "Investimento",
+      // Métodos de pagamento
+      CARTAO: "Cartão",
     };
 
     if (specialCases[value]) {
@@ -234,7 +248,11 @@ export function TransactionForm({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {isEditing ? (
-          <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-dark-gray">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-gray-100 dark:hover:bg-dark-gray"
+          >
             <Pencil className="h-4 w-4 text-gray dark:text-light-gray hover:text-green" />
           </Button>
         ) : (
@@ -268,7 +286,9 @@ export function TransactionForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">Descrição</FormLabel>
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
+                    Descrição
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ex: Almoço, Salário, Investimento..."
@@ -286,30 +306,56 @@ export function TransactionForm({
             <FormField
               control={form.control}
               name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
-                    Valor (R$)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="0,00"
-                      disabled={isLoading}
-                      className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white placeholder:text-gray"
-                      {...field}
-                      value={field.value || ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value === "" ? 0 : parseFloat(value));
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red text-sm" />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const formatCurrencyInput = (value: string) => {
+                  // Remove tudo exceto números
+                  const numbersOnly = value.replace(/\D/g, '');
+
+                  if (numbersOnly === '') {
+                    setDisplayValue('');
+                    field.onChange(0);
+                    return;
+                  }
+
+                  // Converte centavos para reais
+                  const valueInReais = parseInt(numbersOnly) / 100;
+
+                  // Formata para exibição (ex: "1.234,56")
+                  const formatted = valueInReais.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  });
+
+                  setDisplayValue(formatted);
+                  field.onChange(valueInReais);
+                };
+
+                return (
+                  <FormItem>
+                    <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
+                      Valor
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-900 dark:text-white">
+                          R$
+                        </span>
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="0,00"
+                          disabled={isLoading}
+                          className="h-12 pl-12 bg-white dark:bg-background-01 border-gray dark:border-dark-gray text-gray dark:text-white placeholder:text-gray"
+                          value={displayValue}
+                          onChange={(e) => formatCurrencyInput(e.target.value)}
+                          onBlur={field.onBlur}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red text-sm" />
+                  </FormItem>
+                );
+              }}
             />
 
             {/* Tipo */}
@@ -318,14 +364,16 @@ export function TransactionForm({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">Tipo</FormLabel>
+                  <FormLabel className="text-sm text-gray dark:text-light-gray">
+                    Tipo
+                  </FormLabel>
                   <Select
                     disabled={isLoading}
                     onValueChange={field.onChange}
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="h-12 bg-white dark:bg-background-01 border-gray-200 dark:border-dark-gray text-gray-900 dark:text-white">
+                      <SelectTrigger className="h-12 bg-white dark:bg-background-01 border-gray dark:border-dark-gray text-gray dark:text-white">
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                     </FormControl>
@@ -432,7 +480,9 @@ export function TransactionForm({
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">Data</FormLabel>
+                  <FormLabel className="text-sm text-gray-900 dark:text-light-gray">
+                    Data
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="date"

@@ -61,10 +61,9 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   PIX: "Pix",
-  CARTAO_CREDITO: "Cartão de Crédito",
-  CARTAO_DEBITO: "Cartão de Débito",
-  DINHEIRO: "Dinheiro",
   BOLETO: "Boleto",
+  CARTAO: "Cartão",
   TRANSFERENCIA: "Transferência",
+  DINHEIRO: "Dinheiro",
 };
 

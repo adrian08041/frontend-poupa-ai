@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { LogoutButton } from "@/components/ui/logout-button";
+import { UserProfileCard } from "@/components/ui/user-profile-card";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navigation = [
@@ -49,7 +49,7 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <LogoutButton />
+            <UserProfileCard />
           </div>
         </div>
       </div>

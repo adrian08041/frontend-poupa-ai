@@ -13,7 +13,7 @@ export function LogoutButton() {
     setIsLoading(true);
 
     try {
-      // Obter tokens
+      
       const accessToken = localStorage.getItem("access_token");
       const refreshToken = localStorage.getItem("refresh_token");
 
@@ -27,7 +27,7 @@ export function LogoutButton() {
           },
           body: JSON.stringify({ refresh_token: refreshToken }),
         }).catch((error) => {
-          // Ignora erro do backend, remove tokens de qualquer forma
+          
           console.warn("Erro ao fazer logout no backend:", error);
         });
       }
@@ -38,11 +38,11 @@ export function LogoutButton() {
 
       console.log("✅ Logout realizado com sucesso");
 
-      // Redirecionar para login
+      
       router.push("/login");
     } catch (error) {
       console.error("❌ Erro no logout:", error);
-      // Remove tokens mesmo em caso de erro
+      
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
       router.push("/login");
@@ -66,7 +66,6 @@ export function LogoutButton() {
       ) : (
         <>
           <LogOut className="mr-2 h-4 w-4" />
-          Sair
         </>
       )}
     </Button>
