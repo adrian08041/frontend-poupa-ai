@@ -37,6 +37,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showBalance, setShowBalance] = useState(false); // Saldo oculto por padrão
+  const [isTransactionFormOpen, setIsTransactionFormOpen] = useState(false);
 
   // Estado para o mês/ano selecionado
   const currentDate = new Date();
@@ -221,7 +222,7 @@ export default function DashboardPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray dark:text-white">
             Dashboard
           </h1>
           <p className="text-gray mt-2">Visão geral das suas finanças</p>
@@ -237,7 +238,7 @@ export default function DashboardPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray dark:text-white">
             Dashboard
           </h1>
           <p className="text-gray mt-2">Visão geral das suas finanças</p>
@@ -258,7 +259,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray dark:text-white">
           Dashboard
         </h1>
         <div className="flex items-center gap-2 sm:gap-4">
@@ -280,7 +281,7 @@ export default function DashboardPage() {
             </svg>
           </button>
           <select
-            className="px-3 sm:px-4 py-2 text-sm bg-white dark:bg-background-01 text-gray-900 dark:text-white border border-gray-200 dark:border-dark-gray rounded-lg cursor-pointer"
+            className="px-3 sm:px-4 py-2 text-sm bg-white dark:bg-background-01 text-gray dark:text-white border border-gray-200 dark:border-dark-gray rounded-lg cursor-pointer"
             value={`${selectedYear}-${selectedMonth}`}
             onChange={(e) => {
               const [year, month] = e.target.value.split("-");
@@ -320,14 +321,14 @@ export default function DashboardPage() {
                   <h3 className="text-sm font-medium text-gray">Saldo</h3>
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray dark:text-white">
                     {summary
                       ? formatBalanceDisplay(summary.balance)
                       : "R$ •••••"}
                   </p>
                   <button
                     onClick={toggleBalanceVisibility}
-                    className="text-gray hover:text-gray-900 dark:hover:text-white transition-colors flex-shrink-0"
+                    className="text-gray hover:text-gray dark:hover:text-white transition-colors flex-shrink-0"
                   >
                     {showBalance ? (
                       <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -339,15 +340,11 @@ export default function DashboardPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <Button className="bg-green hover:bg-green/90 text-white w-full sm:w-auto">
-                  <Camera className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Adicionar Transação</span>
-                  <span className="sm:hidden">Adicionar</span>
-                </Button>
-
                 <TransactionForm
                   onSuccess={loadDashboardData}
                   onSubmit={handleCreateTransaction}
+                  externalOpen={isTransactionFormOpen}
+                  onOpenChange={setIsTransactionFormOpen}
                 />
               </div>
             </div>
@@ -362,7 +359,7 @@ export default function DashboardPage() {
                   <RefreshCw className="w-4 h-4 text-gray" />
                   <h3 className="text-sm font-medium text-gray">Investido</h3>
                 </div>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-2xl font-bold text-gray dark:text-white">
                   {summary
                     ? formatCurrency(summary.totalInvestment)
                     : "R$ 0,00"}
@@ -408,7 +405,7 @@ export default function DashboardPage() {
                       className="w-full h-full transform -rotate-90"
                       viewBox="0 0 100 100"
                     >
-                      {/* Círculo verde - Ganhos (60%) */}
+                      {/* Círculo verde  */}
                       <circle
                         cx="50"
                         cy="50"
@@ -419,7 +416,7 @@ export default function DashboardPage() {
                         strokeDasharray="150.8 251.2"
                         strokeDashoffset="0"
                       />
-                      {/* Círculo vermelho - Gastos (22%) */}
+                      {/* Círculo vermelho  */}
                       <circle
                         cx="50"
                         cy="50"
@@ -430,7 +427,7 @@ export default function DashboardPage() {
                         strokeDasharray="55.3 251.2"
                         strokeDashoffset="-150.8"
                       />
-                      {/* Círculo cinza - Investimentos (18%) */}
+                      {/* Círculo cinza  */}
                       <circle
                         cx="50"
                         cy="50"
@@ -450,7 +447,7 @@ export default function DashboardPage() {
                       <TrendingUp className="w-4 h-4 text-green" />
                       <span className="text-sm text-gray">Ganhos</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-gray dark:text-white">
                       {summary
                         ? Math.round(
                             (summary.totalIncome /
@@ -468,7 +465,7 @@ export default function DashboardPage() {
                       <TrendingDown className="w-4 h-4 text-red" />
                       <span className="text-sm text-gray">Gastos</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-gray dark:text-white">
                       {summary
                         ? Math.round(
                             (summary.totalExpense /
@@ -486,7 +483,7 @@ export default function DashboardPage() {
                       <RefreshCw className="w-4 h-4 text-gray" />
                       <span className="text-sm text-gray">Investimentos</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-gray dark:text-white">
                       {summary
                         ? Math.round(
                             (summary.totalInvestment /
@@ -518,10 +515,10 @@ export default function DashboardPage() {
                     {categoryExpenses.map((categoryExpense) => (
                       <div key={categoryExpense.category} className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className="text-sm font-medium text-gray dark:text-white">
                             {CATEGORY_LABELS[categoryExpense.category]}
                           </span>
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className="text-sm font-medium text-gray dark:text-white">
                             {Math.round(categoryExpense.percentage)}%
                           </span>
                         </div>

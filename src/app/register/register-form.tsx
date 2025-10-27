@@ -125,7 +125,7 @@ export function RegisterForm() {
                       placeholder="Digite seu nome completo"
                       disabled={isLoading}
                       autoComplete="name"
-                      className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                      className="h-14 bg-white border-gray-300 text-gray placeholder:text-gray-400"
                       {...field}
                     />
                   </FormControl>
@@ -149,7 +149,7 @@ export function RegisterForm() {
                       placeholder="Digite seu e-mail"
                       disabled={isLoading}
                       autoComplete="email"
-                      className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                      className="h-14 bg-white border-gray-300 text-gray placeholder:text-gray-400"
                       {...field}
                     />
                   </FormControl>
@@ -173,7 +173,7 @@ export function RegisterForm() {
                           placeholder="Crie uma senha forte"
                           disabled={isLoading}
                           autoComplete="new-password"
-                          className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 pr-12"
+                          className="h-14 bg-white border-gray-300 text-gray placeholder:text-gray-400 pr-12"
                           {...field}
                         />
                         <button
@@ -233,7 +233,7 @@ export function RegisterForm() {
                         placeholder="Digite a senha novamente"
                         disabled={isLoading}
                         autoComplete="new-password"
-                        className="h-14 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 pr-12"
+                        className="h-14 bg-white border-gray-300 text-gray placeholder:text-gray pr-12"
                         {...field}
                       />
                       <button
@@ -241,7 +241,7 @@ export function RegisterForm() {
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
                         }
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray hover:text-gray transition-colors"
                         tabIndex={-1}
                       >
                         {showConfirmPassword ? (
@@ -272,7 +272,7 @@ export function RegisterForm() {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel className="text-sm text-gray-300 font-normal cursor-pointer">
+                    <FormLabel className="text-sm text-gray font-normal cursor-pointer">
                       Eu aceito os{" "}
                       <Link
                         href="/terms"
@@ -317,7 +317,7 @@ export function RegisterForm() {
         </Form>
 
         <div className="space-y-4">
-          <p className="text-base text-gray-400 text-center">
+          <p className="text-base text-gray text-center">
             Já tem uma conta?{" "}
             <Link
               href="/login"

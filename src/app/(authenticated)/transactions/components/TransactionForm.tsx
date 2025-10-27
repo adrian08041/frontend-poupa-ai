@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Plus, Pencil } from "lucide-react";
+import { Loader2, Plus, Pencil, Upload, X, AlertCircle } from "lucide-react";
 import {
   createTransactionSchema,
   CreateTransactionData,
 } from "@/lib/validator/transaction";
 import { Transaction } from "@/types/transaction";
 import { getTodayISO } from "@/lib/utils/format";
+import { extractTransactionFromImage } from "@/lib/api/transaction";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Dialog,
   DialogContent,
@@ -41,14 +43,22 @@ interface TransactionFormProps {
   transaction?: Transaction;
   onSuccess: () => void;
   onSubmit: (data: CreateTransactionData) => Promise<void>;
+  externalOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function TransactionForm({
   transaction,
   onSuccess,
   onSubmit,
+  externalOpen,
+  onOpenChange,
 }: TransactionFormProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Usa controle externo se fornecido, senão usa o estado interno
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [isLoading, setIsLoading] = useState(false);
   const [displayValue, setDisplayValue] = useState("");
   const [enumData, setEnumData] = useState<{
@@ -60,6 +70,15 @@ export function TransactionForm({
     categories: [],
     paymentMethods: [],
   });
+
+  // Estados para upload de imagem
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractionError, setExtractionError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [extractionSuccess, setExtractionSuccess] = useState(false);
+  const [confidence, setConfidence] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEditing = !!transaction;
 
@@ -183,6 +202,106 @@ export function TransactionForm({
     }
   }, [open]);
 
+  // Função para selecionar imagem
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    // Validar tipo de arquivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      setExtractionError('Formato de arquivo inválido. Envie uma imagem (JPG, PNG, GIF, WEBP) ou PDF.');
+      return;
+    }
+
+    // Validar tamanho (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setExtractionError('Arquivo muito grande. O tamanho máximo é 5MB.');
+      return;
+    }
+
+    setSelectedImage(file);
+    setExtractionError(null);
+
+    // Criar preview da imagem
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null); // PDF não tem preview
+    }
+  };
+
+  // Função para extrair dados da imagem
+  const handleExtractFromImage = async () => {
+    if (!selectedImage) return;
+
+    setIsExtracting(true);
+    setExtractionError(null);
+    setExtractionSuccess(false);
+
+    try {
+      console.log('📤 Enviando imagem para extração...');
+      const extractedData = await extractTransactionFromImage(selectedImage);
+
+      console.log('✅ Dados extraídos:', extractedData);
+
+      // Preencher formulário com dados extraídos
+      form.setValue('description', extractedData.description);
+      form.setValue('amount', extractedData.amount);
+      form.setValue('type', extractedData.type);
+
+      if (extractedData.category) {
+        form.setValue('category', extractedData.category);
+      }
+
+      if (extractedData.date) {
+        form.setValue('date', extractedData.date);
+      }
+
+      // Atualizar displayValue para o campo de valor
+      const formatted = extractedData.amount.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      setDisplayValue(formatted);
+
+      setConfidence(extractedData.confidence);
+      setExtractionSuccess(true);
+
+      // Limpar imagem após sucesso
+      setSelectedImage(null);
+      setImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+    } catch (error) {
+      console.error('❌ Erro ao extrair dados:', error);
+      setExtractionError(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao processar imagem. Tente novamente.'
+      );
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  // Função para remover imagem selecionada
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setExtractionError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   async function handleSubmit(data: CreateTransactionData) {
     setIsLoading(true);
     try {
@@ -274,6 +393,125 @@ export function TransactionForm({
               : "Preencha os dados para adicionar uma nova transação"}
           </DialogDescription>
         </DialogHeader>
+
+        {/* Upload de Imagem - Apenas quando criando nova transação */}
+        {!isEditing && (
+          <div className="space-y-3 pb-4 border-b border-gray-200 dark:border-dark-gray">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                  Extrair de Imagem
+                </h3>
+                <p className="text-xs text-gray">
+                  Envie uma foto do extrato ou comprovante
+                </p>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleImageSelect}
+                className="hidden"
+                disabled={isExtracting}
+              />
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isExtracting}
+                className="border-gray-200 dark:border-dark-gray"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Selecionar
+              </Button>
+            </div>
+
+            {/* Preview da imagem */}
+            {imagePreview && (
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-32 object-cover rounded border border-gray-200 dark:border-dark-gray"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 bg-white/90 dark:bg-black/90 hover:bg-white dark:hover:bg-black"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
+            {/* Botão de extrair */}
+            {selectedImage && !imagePreview && (
+              <div className="p-3 bg-gray-50 dark:bg-background-01 rounded border border-gray-200 dark:border-dark-gray">
+                <p className="text-sm text-gray mb-2">
+                  {selectedImage.name}
+                </p>
+                <Button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  variant="ghost"
+                  size="sm"
+                  className="text-red hover:text-red"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Remover
+                </Button>
+              </div>
+            )}
+
+            {/* Botão extrair dados */}
+            {selectedImage && (
+              <Button
+                type="button"
+                onClick={handleExtractFromImage}
+                disabled={isExtracting}
+                className="w-full bg-green hover:bg-green/90 text-white"
+              >
+                {isExtracting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Extraindo dados...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Extrair Dados
+                  </>
+                )}
+              </Button>
+            )}
+
+            {/* Mensagem de sucesso */}
+            {extractionSuccess && confidence !== null && (
+              <Alert className="border-green bg-green/10">
+                <AlertCircle className="h-4 w-4 text-green" />
+                <AlertDescription className="text-green text-sm">
+                  Dados extraídos com sucesso! Confiança: {confidence}%
+                  {confidence < 70 && " - Revise os dados antes de salvar"}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Mensagem de erro */}
+            {extractionError && (
+              <Alert className="border-red bg-red/10">
+                <AlertCircle className="h-4 w-4 text-red" />
+                <AlertDescription className="text-red text-sm">
+                  {extractionError}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
 
         <Form {...form}>
           <form
