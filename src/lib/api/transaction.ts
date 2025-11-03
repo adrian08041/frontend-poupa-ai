@@ -64,6 +64,15 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     throw new Error("Credenciais inválidas. Faça o login novamente");
   }
 
+  // Se tentar editar transação gerada automaticamente (403)
+  if (response.status === 403) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(
+      errorData?.message ||
+      "Esta transação foi gerada automaticamente a partir de uma transação fixa e não pode ser editada. Edite a transação fixa original."
+    );
+  }
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
     throw new Error(

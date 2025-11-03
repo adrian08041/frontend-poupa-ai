@@ -22,6 +22,7 @@ import {
   CreditCard,
   TrendingUp,
   Wallet,
+  Repeat,
 } from "lucide-react";
 
 import { DeleteDialog } from "./delete-dialog";
@@ -141,7 +142,15 @@ export function TransactionTable({
                   <div className={getIconColor(transaction.type)}>
                     {getPaymentIcon(transaction.paymentMethod)}
                   </div>
-                  <span>{transaction.description}</span>
+                  <div className="flex flex-col gap-1">
+                    <span>{transaction.description}</span>
+                    {transaction.recurringTransactionId && (
+                      <div className="flex items-center gap-1 text-xs text-blue-500 dark:text-blue-400">
+                        <Repeat className="w-3 h-3" />
+                        <span>Transação Fixa</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </TableCell>
               <TableCell>
@@ -176,17 +185,26 @@ export function TransactionTable({
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1">
-                  <TransactionForm
-                    transaction={transaction}
-                    onSuccess={onRefresh}
-                    onSubmit={(data) => onUpdate(transaction.id, data)}
-                  />
-                  <DeleteDialog
-                    transactionId={transaction.id}
-                    transactionDescription={transaction.description}
-                    onDelete={onDelete}
-                    onSuccess={onRefresh}
-                  />
+                  {!transaction.recurringTransactionId && (
+                    <TransactionForm
+                      transaction={transaction}
+                      onSuccess={onRefresh}
+                      onSubmit={(data) => onUpdate(transaction.id, data)}
+                    />
+                  )}
+                  {!transaction.recurringTransactionId && (
+                    <DeleteDialog
+                      transactionId={transaction.id}
+                      transactionDescription={transaction.description}
+                      onDelete={onDelete}
+                      onSuccess={onRefresh}
+                    />
+                  )}
+                  {transaction.recurringTransactionId && (
+                    <span className="text-xs text-gray-400 dark:text-gray-500 italic">
+                      Gerada automaticamente
+                    </span>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

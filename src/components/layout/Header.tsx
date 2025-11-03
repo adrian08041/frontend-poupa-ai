@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Transações", href: "/transactions" },
+  { name: "Fixas", href: "/recurring-transactions" },
   { name: "Relatórios", href: "/reports" },
   { name: "Assinatura", href: "/subscription" },
 ];

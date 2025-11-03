@@ -15,6 +15,7 @@ export interface Transaction {
   createdAt: string;
   updatedAt?: string;
   userId: string;
+  recurringTransactionId?: string | null;
 }
 export interface ListTransactionsResponse {
   transactions: Transaction[];

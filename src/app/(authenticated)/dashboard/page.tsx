@@ -17,13 +17,11 @@ import {
   CircleDollarSign,
   MoreHorizontal,
   CreditCard,
-  Camera,
   Eye,
   EyeOff,
 } from "lucide-react";
 import { TransactionForm } from "@/app/(authenticated)/transactions/components/TransactionForm";
 import type { CreateTransactionData } from "@/lib/validator/transaction";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DashboardPage() {
@@ -124,7 +122,7 @@ export default function DashboardPage() {
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
-      balance: totalIncome - totalExpense - totalInvestment,
+      balance: totalIncome - totalExpense,
       totalIncome,
       totalExpense,
       totalInvestment,
@@ -132,7 +130,7 @@ export default function DashboardPage() {
   };
 
   // Função para calcular gastos por categoria
-  const calculateExpensesByCategory = (transactions: Transaction[]) => {
+  const calculateExpensesByCategory = (transactions: Transaction[]): CategoryExpense[] => {
     const expenses = transactions.filter((t) => t.type === "EXPENSE");
     const totalExpenses = expenses.reduce((sum, t) => sum + t.amount, 0);
 
@@ -153,7 +151,7 @@ export default function DashboardPage() {
 
     return Array.from(categoryMap.entries())
       .map(([category, data]) => ({
-        category,
+        category: category as CategoryExpense['category'],
         amount: data.amount,
         percentage: totalExpenses > 0 ? (data.amount / totalExpenses) * 100 : 0,
         count: data.count,
@@ -397,47 +395,95 @@ export default function DashboardPage() {
           {/* Grid com 2 colunas: Gráfico e Gastos por Categoria */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Gráfico de Pizza - Ganhos/Gastos/Investimentos */}
-            <Card>
-              <CardContent className="p-6">
+            <Card className="h-full">
+              <CardContent className="p-6 h-full flex flex-col justify-center">
                 <div className="flex items-center justify-center mb-6">
                   <div className="relative w-48 h-48">
                     <svg
                       className="w-full h-full transform -rotate-90"
                       viewBox="0 0 100 100"
                     >
-                      {/* Círculo verde  */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        fill="none"
-                        stroke="#22c55e"
-                        strokeWidth="20"
-                        strokeDasharray="150.8 251.2"
-                        strokeDashoffset="0"
-                      />
-                      {/* Círculo vermelho  */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        fill="none"
-                        stroke="#ef4444"
-                        strokeWidth="20"
-                        strokeDasharray="55.3 251.2"
-                        strokeDashoffset="-150.8"
-                      />
-                      {/* Círculo cinza  */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        fill="none"
-                        stroke="#6b7280"
-                        strokeWidth="20"
-                        strokeDasharray="45.2 251.2"
-                        strokeDashoffset="-206.1"
-                      />
+                      {(() => {
+                        if (!summary) return null;
+
+                        const total =
+                          summary.totalIncome +
+                          summary.totalExpense +
+                          summary.totalInvestment;
+
+                        // Se não houver nenhum valor, exibir círculo cinza completo
+                        if (total === 0) {
+                          return (
+                            <circle
+                              cx="50"
+                              cy="50"
+                              r="40"
+                              fill="none"
+                              stroke="#e5e7eb"
+                              strokeWidth="20"
+                            />
+                          );
+                        }
+
+                        const radius = 40;
+                        const circumference = 2 * Math.PI * radius;
+
+                        // Calcular porcentagens
+                        const incomePercentage = (summary.totalIncome / total) * 100;
+                        const expensePercentage = (summary.totalExpense / total) * 100;
+                        const investmentPercentage =
+                          (summary.totalInvestment / total) * 100;
+
+                        // Calcular os comprimentos dos arcos
+                        const incomeLength = (incomePercentage / 100) * circumference;
+                        const expenseLength = (expensePercentage / 100) * circumference;
+                        const investmentLength =
+                          (investmentPercentage / 100) * circumference;
+
+                        return (
+                          <>
+                            {/* Círculo verde - Ganhos */}
+                            {incomeLength > 0 && (
+                              <circle
+                                cx="50"
+                                cy="50"
+                                r="40"
+                                fill="none"
+                                stroke="#22c55e"
+                                strokeWidth="20"
+                                strokeDasharray={`${incomeLength} ${circumference}`}
+                                strokeDashoffset="0"
+                              />
+                            )}
+                            {/* Círculo vermelho - Gastos */}
+                            {expenseLength > 0 && (
+                              <circle
+                                cx="50"
+                                cy="50"
+                                r="40"
+                                fill="none"
+                                stroke="#ef4444"
+                                strokeWidth="20"
+                                strokeDasharray={`${expenseLength} ${circumference}`}
+                                strokeDashoffset={-incomeLength}
+                              />
+                            )}
+                            {/* Círculo cinza - Investimentos */}
+                            {investmentLength > 0 && (
+                              <circle
+                                cx="50"
+                                cy="50"
+                                r="40"
+                                fill="none"
+                                stroke="#6b7280"
+                                strokeWidth="20"
+                                strokeDasharray={`${investmentLength} ${circumference}`}
+                                strokeDashoffset={-(incomeLength + expenseLength)}
+                              />
+                            )}
+                          </>
+                        );
+                      })()}
                     </svg>
                   </div>
                 </div>
