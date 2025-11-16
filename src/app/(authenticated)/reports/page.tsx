@@ -62,8 +62,8 @@ export default function ReportsPage() {
         includeComparison: true,
       });
       setReport(data);
-    } catch (err: any) {
-      setError(err.message || "Erro ao gerar relatório");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao gerar relatório");
       console.error("Erro ao gerar relatório:", err);
     } finally {
       setIsLoading(false);

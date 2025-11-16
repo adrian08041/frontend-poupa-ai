@@ -38,7 +38,7 @@ export function DeleteDialog({
       await onDelete(transactionId);
       setOpen(false);
       onSuccess();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao excluir transação:", error);
       // Aqui você pode adicionar um toast de erro
     } finally {
@@ -71,7 +71,7 @@ export function DeleteDialog({
           <AlertDialogDescription className="text-gray pt-2">
             Tem certeza que deseja excluir a transação{" "}
             <span className="font-semibold text-gray-900 dark:text-white">
-              "{transactionDescription}"
+              &quot;{transactionDescription}&quot;
             </span>
             ?
             <br />

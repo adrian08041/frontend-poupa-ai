@@ -106,9 +106,9 @@ export default function RecurringTransactionsPage() {
         frequency: "MONTHLY",
         startDate: getTodayISO(),
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro completo:', error);
-      alert(error.message || "Erro ao criar transação fixa");
+      alert(error instanceof Error ? error.message : "Erro ao criar transação fixa");
     }
   };
 
@@ -116,8 +116,8 @@ export default function RecurringTransactionsPage() {
     try {
       await toggleRecurringTransaction(id);
       loadTransactions();
-    } catch (error: any) {
-      alert(error.message || "Erro ao alternar status");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Erro ao alternar status");
     }
   };
 
@@ -126,8 +126,8 @@ export default function RecurringTransactionsPage() {
     try {
       await deleteRecurringTransaction(id);
       loadTransactions();
-    } catch (error: any) {
-      alert(error.message || "Erro ao deletar transação fixa");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Erro ao deletar transação fixa");
     }
   };
 
@@ -195,8 +195,8 @@ export default function RecurringTransactionsPage() {
                     </Label>
                     <Select
                       value={formData.type}
-                      onValueChange={(value: any) =>
-                        setFormData({ ...formData, type: value })
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, type: value as CreateRecurringTransactionData['type'] })
                       }
                     >
                       <SelectTrigger className="h-11">
@@ -292,8 +292,8 @@ export default function RecurringTransactionsPage() {
                   </Label>
                   <Select
                     value={formData.frequency}
-                    onValueChange={(value: any) =>
-                      setFormData({ ...formData, frequency: value })
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, frequency: value as CreateRecurringTransactionData['frequency'] })
                     }
                   >
                     <SelectTrigger className="h-11">

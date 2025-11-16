@@ -65,7 +65,7 @@ export default function DashboardPage() {
     const iconClass = "w-5 h-5";
 
     // Mapeamento de métodos de pagamento para ícones
-    const iconMap: Record<string, JSX.Element> = {
+    const iconMap: Record<string, React.ReactElement> = {
       PIX: <CircleDollarSign className={iconClass} />,
       BOLETO: <CreditCard className={iconClass} />,
       CARTAO: <CreditCard className={iconClass} />,

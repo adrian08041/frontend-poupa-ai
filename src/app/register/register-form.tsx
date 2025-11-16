@@ -63,7 +63,7 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const { confirmPassword, ...registerData } = data;
+      const { confirmPassword: _confirmPassword, ...registerData } = data;
 
       console.log("📤 Enviando dados para o backend:", registerData);
 
@@ -87,8 +87,8 @@ export function RegisterForm() {
       console.log("✅ Cadastro realizado com sucesso:", result);
 
       router.push("/login");
-    } catch (error: any) {
-      console.error("❌ Erro no cadastro:", error.message || error);
+    } catch (error) {
+      console.error("❌ Erro no cadastro:", error instanceof Error ? error.message : error);
     } finally {
       setIsLoading(false);
     }

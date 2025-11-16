@@ -256,7 +256,7 @@ export function TransactionForm({
       form.setValue('type', extractedData.type);
 
       if (extractedData.category) {
-        form.setValue('category', extractedData.category);
+        form.setValue('category', extractedData.category as CreateTransactionData['category']);
       }
 
       if (extractedData.date) {

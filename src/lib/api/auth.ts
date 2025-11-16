@@ -11,8 +11,8 @@ export class AuthError extends Error {
 }
 
 
-export async function signIn(credentials: LoginFormData) {
-  
+export async function signIn(_credentials: LoginFormData) {
+  // TODO: Implement signIn function
 }
 
 

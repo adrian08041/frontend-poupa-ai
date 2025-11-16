@@ -1,42 +1,30 @@
 import { z } from "zod";
 
 // Enums do backend
-export const transactionTypeEnum = z.enum(["INCOME", "EXPENSE", "INVESTMENT"], {
-  errorMap: () => ({ message: "Tipo de transação inválido" }),
-});
+export const transactionTypeEnum = z.enum(["INCOME", "EXPENSE", "INVESTMENT"]);
 
-export const categoryEnum = z.enum(
-  [
-    "ALIMENTACAO",
-    "TRANSPORTE",
-    "MORADIA",
-    "LAZER",
-    "SAUDE",
-    "EDUCACAO",
-    "VESTUARIO",
-    "SALARIO",
-    "FREELANCE",
-    "INVESTIMENTO",
-    "PRESENTE",
-    "OUTROS",
-  ],
-  {
-    errorMap: () => ({ message: "Categoria inválida" }),
-  }
-);
+export const categoryEnum = z.enum([
+  "ALIMENTACAO",
+  "TRANSPORTE",
+  "MORADIA",
+  "LAZER",
+  "SAUDE",
+  "EDUCACAO",
+  "VESTUARIO",
+  "SALARIO",
+  "FREELANCE",
+  "INVESTIMENTO",
+  "PRESENTE",
+  "OUTROS",
+]);
 
-export const paymentMethodEnum = z.enum(
-  [
-    "PIX",
-    "BOLETO",
-    "CARTAO",
-    "TRANSFERENCIA",
-    "DINHEIRO",
-  ],
-  {
-    errorMap: () => ({ message: "Método de pagamento inválido" }),
-  }
-);
+export const paymentMethodEnum = z.enum([
+  "PIX",
+  "BOLETO",
+  "CARTAO",
+  "TRANSFERENCIA",
+  "DINHEIRO",
+]);
 
 // Schema base para criar transação
 const baseCreateTransactionSchema = z.object({
@@ -44,10 +32,7 @@ const baseCreateTransactionSchema = z.object({
   category: categoryEnum.optional().nullable(), // ✅ Opcional e pode ser null
   paymentMethod: paymentMethodEnum,
   amount: z
-    .number({
-      required_error: "O valor é obrigatório",
-      invalid_type_error: "O valor deve ser um número",
-    })
+    .number()
     .positive("O valor deve ser maior que zero")
     .transform((val) => parseFloat(val.toFixed(2))), // Garante 2 casas decimais
   description: z

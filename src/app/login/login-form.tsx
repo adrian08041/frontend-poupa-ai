@@ -81,10 +81,10 @@ export function LoginForm() {
       }
 
       router.push("/transactions");
-    } catch (err: any) {
+    } catch (err) {
       console.error("❌ Erro no login:", err);
       const message =
-        err?.message || "Erro inesperado ao fazer login. Tente novamente.";
+        err instanceof Error ? err.message : "Erro inesperado ao fazer login. Tente novamente.";
       setError(message);
     } finally {
       setIsLoading(false);

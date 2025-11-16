@@ -51,7 +51,7 @@ export function TransactionTable({
   const getPaymentIcon = (paymentMethod: string) => {
     const iconClass = "w-4 h-4";
 
-    const iconMap: Record<string, JSX.Element> = {
+    const iconMap: Record<string, React.ReactElement> = {
       PIX: <CircleDollarSign className={iconClass} />,
       BOLETO: <CreditCard className={iconClass} />,
       CARTAO: <CreditCard className={iconClass} />,

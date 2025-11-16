@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Transaction } from "@/types/transaction";
 import { CreateTransactionData } from "@/lib/validator/transaction";
@@ -24,7 +24,30 @@ export default function TransactionsPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Verificar autenticação
+  const loadTransactions = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await listTransactions();
+      setTransactions(response.transactions);
+    } catch (error) {
+      console.error("Erro ao carregar transações:", error);
+      const errorMessage = error instanceof Error ? error.message : "Erro ao carregar transações";
+      setError(errorMessage);
+
+      // Se erro de autenticação, redireciona para login
+      if (
+        errorMessage.includes("autenticado") ||
+        errorMessage.includes("401")
+      ) {
+        router.push("/login");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [router]);
+
+  // Verificar autenticação e carregar transações
   useEffect(() => {
     // Verifica se tem token no localStorage
     const token =
@@ -37,29 +60,7 @@ export default function TransactionsPage() {
     }
 
     loadTransactions();
-  }, [router]);
-
-  async function loadTransactions() {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await listTransactions();
-      setTransactions(response.transactions);
-    } catch (error: any) {
-      console.error("Erro ao carregar transações:", error);
-      setError(error.message || "Erro ao carregar transações");
-
-      // Se erro de autenticação, redireciona para login
-      if (
-        error.message?.includes("autenticado") ||
-        error.message?.includes("401")
-      ) {
-        router.push("/login");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  }, [router, loadTransactions]);
 
   async function handleRefresh() {
     try {

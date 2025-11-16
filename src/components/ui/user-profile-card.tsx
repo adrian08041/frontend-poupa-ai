@@ -72,7 +72,7 @@ export function UserProfileCard() {
       .slice(0, 2);
   };
 
-  const handleProfileUpdate = async (data: { name: string }) => {
+  const handleProfileUpdate = async (_data: { name: string }) => {
     await loadUserData();
   };
 
