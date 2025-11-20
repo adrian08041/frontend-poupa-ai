@@ -23,6 +23,7 @@ import {
 import { TransactionForm } from "@/app/(authenticated)/transactions/components/TransactionForm";
 import type { CreateTransactionData } from "@/lib/validator/transaction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
@@ -596,9 +597,15 @@ export default function DashboardPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Transações</CardTitle>
-                <button className="text-sm text-gray hover:text-gray-900 dark:hover:text-white transition-colors">
-                  Ver mais
-                </button>
+
+                <Link href="/transactions" >
+                   <button className="text-sm text-gray hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer">
+                    Ver mais
+                  </button>
+                </Link>
+               
+                
+
               </div>
             </CardHeader>
             <CardContent>
