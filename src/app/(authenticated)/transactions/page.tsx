@@ -110,18 +110,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="flex gap-3">
-          <Button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            variant="outline"
-            className="border-gray-200 dark:border-dark-gray hover:bg-gray-50 dark:hover:bg-dark-gray"
-          >
-            <RefreshCw
-              className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            Atualizar
-          </Button>
-
+   
           <TransactionForm
             onSuccess={loadTransactions}
             onSubmit={handleCreate}
