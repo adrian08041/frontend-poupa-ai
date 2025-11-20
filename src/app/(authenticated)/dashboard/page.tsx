@@ -24,6 +24,7 @@ import { TransactionForm } from "@/app/(authenticated)/transactions/components/T
 import type { CreateTransactionData } from "@/lib/validator/transaction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { Linden_Hill } from "next/font/google";
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
@@ -262,7 +263,9 @@ export default function DashboardPage() {
           Dashboard
         </h1>
         <div className="flex items-center gap-2 sm:gap-4">
-          <button className="flex items-center gap-2 px-3 sm:px-4 py-2 cursor-pointer text-sm text-gray dark:text-white hover:bg-gray-100 dark:hover:bg-dark-gray rounded-lg transition-colors">
+
+        <Link href="/reports">
+        <button className="flex items-center gap-2 px-3 sm:px-4 py-2 cursor-pointer text-sm text-gray dark:text-white hover:bg-gray-100 dark:hover:bg-dark-gray rounded-lg transition-colors">
             <span className="hidden sm:inline">Relatório IA</span>
             <span className="sm:hidden">IA</span>
             <svg
@@ -279,6 +282,9 @@ export default function DashboardPage() {
               />
             </svg>
           </button>
+        </Link>
+
+          
           <select
             className="px-3 sm:px-4 py-2 text-sm bg-white dark:bg-background-01 text-gray dark:text-white border border-gray-200 dark:border-dark-gray rounded-lg cursor-pointer"
             value={`${selectedYear}-${selectedMonth}`}
