@@ -88,7 +88,7 @@ export default function SubscriptionPage() {
             </li>
           </ul>
 
-          <Button className="w-full h-12 bg-green hover:bg-green/90 text-white">
+          <Button className="w-full h-12 bg-green hover:bg-green/90 text-white cursor-pointer">
             Assinar Agora
           </Button>
         </div>
