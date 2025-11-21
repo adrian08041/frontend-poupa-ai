@@ -6,13 +6,18 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { UserProfileCard } from "@/components/ui/user-profile-card";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { MessageCircle, Info } from "lucide-react";
+import { useState, useMemo } from "react";
+
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Transações", href: "/transactions" },
   { name: "Fixas", href: "/recurring-transactions" },
   { name: "Relatórios", href: "/reports" },
+  { name: "PoupaAI Zap", href: "/whatsapp-ai", icon: MessageCircle },
   { name: "Assinatura", href: "/subscription" },
+
 ];
 
 export function Header() {
