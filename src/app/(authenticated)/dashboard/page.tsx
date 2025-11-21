@@ -24,7 +24,6 @@ import { TransactionForm } from "@/app/(authenticated)/transactions/components/T
 import type { CreateTransactionData } from "@/lib/validator/transaction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Linden_Hill } from "next/font/google";
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<SummaryResponse | null>(null);

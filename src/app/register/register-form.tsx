@@ -63,7 +63,8 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      const { confirmPassword: _confirmPassword, ...registerData } = data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { confirmPassword, ...registerData } = data;
 
       console.log("📤 Enviando dados para o backend:", registerData);
 

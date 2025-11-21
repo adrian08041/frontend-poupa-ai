@@ -432,6 +432,7 @@ export function TransactionForm({
             {/* Preview da imagem */}
             {imagePreview && (
               <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imagePreview}
                   alt="Preview"

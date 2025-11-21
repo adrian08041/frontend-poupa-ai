@@ -10,7 +10,7 @@ export class AuthError extends Error {
   }
 }
 
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function signIn(_credentials: LoginFormData) {
   // TODO: Implement signIn function
 }

@@ -6,8 +6,7 @@ import { Transaction } from "@/types/transaction";
 import { CreateTransactionData } from "@/lib/validator/transaction";
 
 import { TransactionTable } from "./components/transaction-table";
-import { Loader2, RefreshCw, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TransactionForm } from "./components/TransactionForm";
 import {
@@ -21,7 +20,6 @@ export default function TransactionsPage() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadTransactions = useCallback(async () => {
@@ -61,16 +59,6 @@ export default function TransactionsPage() {
 
     loadTransactions();
   }, [router, loadTransactions]);
-
-  async function handleRefresh() {
-    try {
-      setIsRefreshing(true);
-      setError(null);
-      await loadTransactions();
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
 
   async function handleCreate(data: CreateTransactionData) {
     await createTransaction(data);

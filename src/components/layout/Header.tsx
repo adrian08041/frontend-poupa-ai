@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { UserProfileCard } from "@/components/ui/user-profile-card";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { MessageCircle, Info } from "lucide-react";
-import { useState, useMemo } from "react";
+import { MessageCircle } from "lucide-react";
 
 
 const navigation = [

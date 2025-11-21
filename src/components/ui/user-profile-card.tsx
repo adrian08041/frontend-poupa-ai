@@ -72,6 +72,7 @@ export function UserProfileCard() {
       .slice(0, 2);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleProfileUpdate = async (_data: { name: string }) => {
     await loadUserData();
   };
