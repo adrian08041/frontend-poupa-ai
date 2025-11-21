@@ -1,16 +1,14 @@
 // src/app/(authenticated)/whatsapp-ai/page.tsx
 "use client";
 
-import { MessageCircle, Zap, Bot, ArrowRight, Lightbulb, Workflow, Smartphone, HelpCircle, Code, ShieldCheck, Camera, Receipt, Info, CheckCircle2, TrendingUp, TrendingDown, Clock, Search, CreditCard, DollarSign } from "lucide-react";
+import { MessageCircle, Zap, Bot, ArrowRight, Lightbulb, Workflow, Smartphone, HelpCircle, Code, ShieldCheck, Camera, Receipt, CheckCircle2, TrendingUp, TrendingDown, Clock, Search, CreditCard, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
 import { useState, useMemo } from "react";
-import { cn } from "@/lib/utils"; 
-import Link from "next/link";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 // Definições de constantes que usamos em múltiplos lugares (bom para manutenção!)
 const WHATSAPP_NUMBER_DISPLAY = "+55 34 9668-8345";
@@ -489,7 +487,7 @@ export default function WhatsappAiPage() {
                     <CardFooter className="pt-6 border-t border-dark-gray/50 mt-6">
                         <p className="text-sm text-gray-500 italic flex items-center gap-2">
                             <Receipt className="h-4 w-4 text-gray" />
-                            Minha dica é: use o WhatsApp para transações rápidas e pontuais, mas para despesas recorrentes, prefira a guia "Fixas" no app web!
+                            Minha dica é: use o WhatsApp para transações rápidas e pontuais, mas para despesas recorrentes, prefira a guia &apos;Fixas&apos; no app web!
                         </p>
                     </CardFooter>
                 </Card>
