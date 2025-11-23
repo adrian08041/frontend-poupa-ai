@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, Lock, Trash2, Loader2, MessageCircle, Copy, CheckCircle2, ExternalLink } from "lucide-react";
+import { User, Lock, Loader2, MessageCircle, Copy, CheckCircle2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -18,16 +18,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   profileSchema,
   changePasswordSchema,
   whatsappSchema,
@@ -35,8 +25,7 @@ import {
   type ChangePasswordFormData,
   type WhatsAppFormData,
 } from "@/lib/validator/profile";
-import { updateProfile, changePassword, deleteAccount, generateWhatsAppLinkCode, getWhatsAppStatus, unlinkWhatsApp } from "@/lib/api/profile";
-import { useRouter } from "next/navigation";
+import { updateProfile, changePassword, generateWhatsAppLinkCode, getWhatsAppStatus, linkWhatsApp, unlinkWhatsApp } from "@/lib/api/profile";
 
 interface ProfileSettingsDialogProps {
   open: boolean;
@@ -54,9 +43,7 @@ export function ProfileSettingsDialog({
   initialData,
   onProfileUpdate,
 }: ProfileSettingsDialogProps) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -160,35 +147,20 @@ export function ProfileSettingsDialog({
     }
   };
 
-  const handleDeleteAccount = async () => {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    try {
-      await deleteAccount();
-
-      toast.info("Conta excluída com sucesso", {
-        description: "Seus dados foram removidos"
-      });
-
-      router.push("/login");
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-        toast.error("Erro", {
-          description: error.message
-        });
-      }
-      setIsLoading(false);
-    }
-  };
-
   const handleGenerateLinkCode = async () => {
+    const phoneNumber = whatsappForm.getValues("phoneNumber");
+    
+    // Valida se o campo está preenchido antes de enviar
+    const isValid = await whatsappForm.trigger("phoneNumber");
+    if (!isValid || !phoneNumber) {
+      return;
+    }
+
     setIsGeneratingCode(true);
     setErrorMessage("");
 
     try {
-      const response = await generateWhatsAppLinkCode();
+      const response = await generateWhatsAppLinkCode(phoneNumber);
       setWhatsappLinkCode(response.linkCode);
       setCodeExpiresAt(response.expiresAt);
       
@@ -240,18 +212,55 @@ export function ProfileSettingsDialog({
     }
   };
 
-  const handleOpenWhatsApp = () => {
-    if (!whatsappLinkCode) return;
-    
-    const phoneNumber = "553496688345"; // Número do bot
-    const message = `Olá! Quero vincular minha conta. Código: ${whatsappLinkCode}`;
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappUrl, "_blank");
-    
-    toast.info("WhatsApp aberto!", {
-      description: "Envie a mensagem para completar a vinculação"
-    });
+  const handleOpenWhatsApp = async () => {
+    console.log('[handleOpenWhatsApp] Iniciando vinculação');
+    console.log('[handleOpenWhatsApp] Código:', whatsappLinkCode);
+
+    if (!whatsappLinkCode) {
+      console.warn('[handleOpenWhatsApp] Sem código de vinculação');
+      return;
+    }
+
+    const phoneNumber = whatsappForm.getValues("phoneNumber");
+    console.log('[handleOpenWhatsApp] Número do formulário:', phoneNumber);
+
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      // Primeiro vincula o WhatsApp
+      console.log('[handleOpenWhatsApp] Chamando linkWhatsApp...');
+      await linkWhatsApp(phoneNumber);
+      console.log('[handleOpenWhatsApp] Vinculação concluída com sucesso');
+
+      // Se a vinculação foi bem-sucedida, abre o WhatsApp
+      const botNumber = "553891298970"; // Número do bot
+      const message = `Olá! Acabei de vincular minha conta ao PoupaAi!`;
+      const whatsappUrl = `https://wa.me/${botNumber}?text=${encodeURIComponent(message)}`;
+
+      window.open(whatsappUrl, "_blank");
+
+      toast.success("WhatsApp vinculado com sucesso!", {
+        description: "Você já pode usar o bot"
+      });
+
+      // Atualiza o status
+      await loadWhatsAppStatus();
+
+      // Limpa o código
+      setWhatsappLinkCode("");
+
+    } catch (error) {
+      console.error('[handleOpenWhatsApp] Erro:', error);
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+        toast.error("Erro ao vincular", {
+          description: error.message
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Load WhatsApp status when dialog opens
@@ -283,22 +292,18 @@ export function ProfileSettingsDialog({
           )}
 
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="profile">
-                <User className="h-4 w-4 mr-2" />
-                Perfil
+            <TabsList className="grid w-full grid-cols-3 h-auto gap-0.5 p-0.5 sm:gap-1 sm:p-1">
+              <TabsTrigger value="profile" className="flex-col gap-0.5 px-1.5 py-1.5 text-[10px] sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm">
+                <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-0" />
+                <span className="leading-tight">Perfil</span>
               </TabsTrigger>
-              <TabsTrigger value="security">
-                <Lock className="h-4 w-4 mr-2" />
-                Segurança
+              <TabsTrigger value="security" className="flex-col gap-0.5 px-1.5 py-1.5 text-[10px] sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm">
+                <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-0" />
+                <span className="leading-tight">Segurança</span>
               </TabsTrigger>
-              <TabsTrigger value="whatsapp">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                WhatsApp
-              </TabsTrigger>
-              <TabsTrigger value="account">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Conta
+              <TabsTrigger value="whatsapp" className="flex-col gap-0.5 px-1.5 py-1.5 text-[10px] sm:flex-row sm:gap-2 sm:px-3 sm:py-2 sm:text-sm">
+                <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-0" />
+                <span className="leading-tight">WhatsApp</span>
               </TabsTrigger>
             </TabsList>
 
@@ -578,54 +583,9 @@ export function ProfileSettingsDialog({
                 )}
               </div>
             </TabsContent>
-
-            {/* Aba de Conta */}
-            <TabsContent value="account" className="space-y-4">
-              <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10 p-4">
-                <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">
-                  Zona de Perigo
-                </h3>
-                <p className="text-sm text-red-700 dark:text-red-300 mb-4">
-                  Ao excluir sua conta, todos os seus dados serão permanentemente removidos.
-                  Esta ação não pode ser desfeita.
-                </p>
-                <Button
-                  variant="destructive"
-                  onClick={() => setDeleteDialogOpen(true)}
-                  className="w-full"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Excluir minha conta
-                </Button>
-              </div>
-            </TabsContent>
           </Tabs>
         </DialogContent>
       </Dialog>
-
-      {/* Dialog de confirmação de exclusão */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Isto irá excluir permanentemente sua
-              conta e remover todos os seus dados de nossos servidores.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteAccount}
-              className="bg-red-600 hover:bg-red-700"
-              disabled={isLoading}
-            >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sim, excluir conta
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

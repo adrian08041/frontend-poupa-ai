@@ -143,51 +143,49 @@ export async function deleteAccount() {
 // WHATSAPP LINKING FUNCTIONS
 // ====================================================================
 
-export async function generateWhatsAppLinkCode() {
-  try {
-    // Ajustado para o endpoint correto: POST /users/whatsapp/auth
-    const response = await fetch(`${API_BASE_URL}/users/whatsapp/auth`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-    });
+export async function generateWhatsAppLinkCode(phoneNumber: string) {
+  // Esta função agora apenas valida e formata o número
+  // A vinculação real é feita pela função linkWhatsApp
+  const cleanPhone = phoneNumber.replace(/\D/g, "");
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new ProfileError(
-        error.message || "Erro ao gerar código de vinculação",
-        response.status
-      );
-    }
+  // Adiciona o código do país se não tiver
+  const formattedPhone = cleanPhone.startsWith('+') ? cleanPhone : `+${cleanPhone}`;
 
-    const data = await response.json();
-    // Assumindo que o backend retorna { code: "...", expiresAt: "..." } ou similar
-    // Vou mapear para o formato que o frontend espera
-    return {
-      linkCode: data.code || data.linkCode,
-      expiresAt: data.expiresAt,
-      whatsappUrl: data.whatsappUrl
-    };
-  } catch (error) {
-    if (error instanceof ProfileError) {
-      throw error;
-    }
-    throw new ProfileError("Erro de conexão. Tente novamente.");
-  }
+  // Gera um código aleatório de 6 dígitos para exibição
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  return {
+    linkCode: code,
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 minutos
+    phoneNumber: formattedPhone
+  };
 }
 
 export async function linkWhatsApp(phoneNumber: string) {
   try {
-    // Ajustado para o endpoint correto: PUT /users/me/whatsapp
+    // Limpa e formata o número
+    const cleanPhone = phoneNumber.replace(/\D/g, "");
+    const formattedPhone = cleanPhone.startsWith('+') ? cleanPhone : `+${cleanPhone}`;
+
+    console.log('[linkWhatsApp] Número original:', phoneNumber);
+    console.log('[linkWhatsApp] Número limpo:', cleanPhone);
+    console.log('[linkWhatsApp] Número formatado:', formattedPhone);
+    console.log('[linkWhatsApp] URL:', `${API_BASE_URL}/users/me/whatsapp`);
+
+    // Endpoint correto: PUT /users/me/whatsapp
     const response = await fetch(`${API_BASE_URL}/users/me/whatsapp`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify({
-        phoneNumber,
+        whatsappNumber: formattedPhone, // Campo correto esperado pelo backend
       }),
     });
 
+    console.log('[linkWhatsApp] Status da resposta:', response.status);
+
     if (!response.ok) {
       const error = await response.json();
+      console.error('[linkWhatsApp] Erro da API:', error);
       throw new ProfileError(
         error.message || "Erro ao vincular WhatsApp",
         response.status
@@ -195,8 +193,10 @@ export async function linkWhatsApp(phoneNumber: string) {
     }
 
     const data = await response.json();
+    console.log('[linkWhatsApp] Sucesso:', data);
     return data;
   } catch (error) {
+    console.error('[linkWhatsApp] Erro capturado:', error);
     if (error instanceof ProfileError) {
       throw error;
     }

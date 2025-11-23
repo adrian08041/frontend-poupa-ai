@@ -26,8 +26,8 @@ export default function AuthenticatedLayout({
       
       {/* RENDERIZAÇÃO CONDICIONAL */}
       {showFloatingButton && (
-        <WhatsAppButton 
-          phoneNumber="553496688345" 
+        <WhatsAppButton
+          phoneNumber="553891298970"
           message="Olá, preciso de ajuda com o PoupaAI!"
         />
       )}
