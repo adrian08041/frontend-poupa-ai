@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { generateReport } from "@/lib/api/transaction";
 import { ReportResponse } from "@/types/report";
 import { formatCurrency, centsToReais } from "@/lib/utils/format";
+import { saveReport, loadReport } from "@/lib/utils/storage";
+import { exportReportToPDF } from "@/lib/utils/exportPDF";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +24,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,7 +36,18 @@ export default function ReportsPage() {
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [report, setReport] = useState<ReportResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Carrega relatório salvo ao montar o componente
+  useEffect(() => {
+    const savedReport = loadReport();
+    if (savedReport) {
+      setReport(savedReport);
+      setSelectedMonth(savedReport.period.month);
+      setSelectedYear(savedReport.period.year);
+    }
+  }, []);
 
   const months = [
     { value: 1, label: "Janeiro" },
@@ -63,6 +77,9 @@ export default function ReportsPage() {
         includeComparison: true,
       });
       setReport(data);
+      
+      // Salva o relatório no localStorage
+      saveReport(data);
 
       toast.success("Relatório gerado com sucesso!", {
         description: "Análise completa para " + selectedMonth + "/" + selectedYear
@@ -77,6 +94,25 @@ export default function ReportsPage() {
       console.error("Erro ao gerar relatório:", err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleExportPDF = () => {
+    if (!report) return;
+    
+    setIsExporting(true);
+    try {
+      exportReportToPDF(report);
+      toast.success("PDF exportado com sucesso!", {
+        description: "O arquivo foi baixado para seu computador"
+      });
+    } catch (err) {
+      toast.error("Erro ao exportar PDF", {
+        description: err instanceof Error ? err.message : "Erro desconhecido"
+      });
+      console.error("Erro ao exportar PDF:", err);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -97,6 +133,26 @@ export default function ReportsPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Relatório Financeiro</h1>
+        {report && (
+          <Button
+            onClick={handleExportPDF}
+            disabled={isExporting}
+            variant="outline"
+            className="gap-2"
+          >
+            {isExporting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Exportando...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Exportar PDF
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Filtros */}
