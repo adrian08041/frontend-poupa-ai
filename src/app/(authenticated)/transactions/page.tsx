@@ -21,6 +21,11 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Estados de paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
 
   const loadTransactions = useCallback(async () => {
     try {
@@ -75,6 +80,13 @@ export default function TransactionsPage() {
     console.log("✅ Transação excluída com sucesso");
   }
 
+  function handlePageChange(page: number) {
+    setCurrentPage(page);
+    // Scroll suave para o topo da tabela
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+
   if (isLoading) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
@@ -89,7 +101,7 @@ export default function TransactionsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Transações</h1>
           <p className="text-gray">
@@ -104,6 +116,40 @@ export default function TransactionsPage() {
             onSubmit={handleCreate}
           />
         </div>
+      </div>
+
+      {/* Filtros e controles */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <label htmlFor="itemsPerPage" className="text-sm text-gray dark:text-light-gray">
+            Mostrar:
+          </label>
+          <select
+            id="itemsPerPage"
+            value={itemsPerPage}
+            onChange={(e) => {
+              setItemsPerPage(Number(e.target.value));
+              setCurrentPage(1); // Resetar para primeira página ao mudar itens por página
+            }}
+            className="px-3 py-1.5 text-sm border border-gray-200 dark:border-dark-gray rounded-md bg-white dark:bg-background-02 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <span className="text-sm text-gray dark:text-light-gray">
+            por página
+          </span>
+        </div>
+        
+        {transactions.length > 0 && (
+          <p className="text-sm text-gray dark:text-light-gray">
+            Total: <span className="font-medium">{transactions.length}</span>{" "}
+            {transactions.length === 1 ? "transação" : "transações"}
+          </p>
+        )}
       </div>
 
       {/* Erro */}
@@ -123,17 +169,10 @@ export default function TransactionsPage() {
         onUpdate={handleUpdate}
         onDelete={handleDelete}
         onRefresh={loadTransactions}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={handlePageChange}
       />
-
-      {/* Contador de transações */}
-      {transactions.length > 0 && (
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray">
-            Total de {transactions.length}{" "}
-            {transactions.length === 1 ? "transação" : "transações"}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

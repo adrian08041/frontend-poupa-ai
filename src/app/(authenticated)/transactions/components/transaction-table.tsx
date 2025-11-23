@@ -28,12 +28,16 @@ import {
 import { DeleteDialog } from "./delete-dialog";
 import { CreateTransactionData } from "@/lib/validator/transaction";
 import { TransactionForm } from "./TransactionForm";
+import { Pagination } from "@/components/ui/pagination";
 
 interface TransactionTableProps {
   transactions: Transaction[];
   onUpdate: (id: string, data: CreateTransactionData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onRefresh: () => void;
+  currentPage?: number;
+  itemsPerPage?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export function TransactionTable({
@@ -41,11 +45,21 @@ export function TransactionTable({
   onUpdate,
   onDelete,
   onRefresh,
+  currentPage = 1,
+  itemsPerPage = 10,
+  onPageChange,
 }: TransactionTableProps) {
   // Ordenar transações por data (mais recente primeiro)
   const sortedTransactions = [...transactions].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+
+  // Calcular paginação
+  const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTransactions = sortedTransactions.slice(startIndex, endIndex);
+
 
   // Função para retornar o ícone baseado no método de pagamento
   const getPaymentIcon = (paymentMethod: string) => {
@@ -132,7 +146,7 @@ export function TransactionTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedTransactions.map((transaction) => (
+          {paginatedTransactions.map((transaction) => (
             <TableRow
               key={transaction.id}
               className="border-gray-200 dark:border-dark-gray hover:bg-gray-50 dark:hover:bg-dark-gray transition-colors"
@@ -211,6 +225,17 @@ export function TransactionTable({
           ))}
         </TableBody>
       </Table>
+      
+      {/* Paginação */}
+      {onPageChange && totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={sortedTransactions.length}
+        />
+      )}
     </div>
   );
 }
