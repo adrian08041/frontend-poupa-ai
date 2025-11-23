@@ -35,3 +35,16 @@ export const changePasswordSchema = z
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+
+export const whatsappSchema = z.object({
+  phoneNumber: z
+    .string()
+    .min(1, "O número do WhatsApp é obrigatório")
+    .regex(
+      /^\+?55\s?\(?[1-9]{2}\)?\s?9?\s?\d{4}-?\d{4}$/,
+      "Formato inválido. Use: +55 (XX) 9XXXX-XXXX"
+    )
+    .transform((val) => val.replace(/\D/g, "")), // Remove caracteres não numéricos
+});
+
+export type WhatsAppFormData = z.infer<typeof whatsappSchema>;
