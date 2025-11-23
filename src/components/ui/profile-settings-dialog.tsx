@@ -483,7 +483,7 @@ export function ProfileSettingsDialog({
                       <Input
                         id="whatsappPhone"
                         {...whatsappForm.register("phoneNumber")}
-                        placeholder="+55 (34) 99999-9999"
+                        placeholder="55 (34) 7633-8889 ou 5534976338889"
                         disabled={!!whatsappLinkCode}
                       />
                       {whatsappForm.formState.errors.phoneNumber && (
@@ -492,7 +492,7 @@ export function ProfileSettingsDialog({
                         </p>
                       )}
                       <p className="text-xs text-gray-600 dark:text-gray-400">
-                        Digite o número que você usará para conversar com o bot
+                        Digite: 55 + DDD + 8 dígitos (12 dígitos no total). Ex: 5534976338889
                       </p>
                     </div>
 

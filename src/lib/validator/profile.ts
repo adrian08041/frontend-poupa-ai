@@ -40,11 +40,15 @@ export const whatsappSchema = z.object({
   phoneNumber: z
     .string()
     .min(1, "O número do WhatsApp é obrigatório")
-    .regex(
-      /^\+?55\s?\(?[1-9]{2}\)?\s?9?\s?\d{4}-?\d{4}$/,
-      "Formato inválido. Use: +55 (XX) 9XXXX-XXXX"
+    .transform((val) => val.replace(/\D/g, "")) // Remove caracteres não numéricos primeiro
+    .refine(
+      (val) => val.length === 12,
+      "O número deve ter exatamente 12 dígitos no formato: 553497633889"
     )
-    .transform((val) => val.replace(/\D/g, "")), // Remove caracteres não numéricos
+    .refine(
+      (val) => /^55[1-9][0-9]\d{8}$/.test(val),
+      "Formato inválido. Use: 55 + DDD + 8 dígitos do número (ex: 553497633889)"
+    ),
 });
 
 export type WhatsAppFormData = z.infer<typeof whatsappSchema>;
