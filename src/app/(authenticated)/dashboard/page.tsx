@@ -631,8 +631,8 @@ export default function DashboardPage() {
                       </div>
 
                       {/* Descrição e data */}
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900 dark:text-white">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-white overflow-hidden text-ellipsis whitespace-nowrap">
                           {transaction.description}
                         </p>
                         <p className="text-sm text-gray">
