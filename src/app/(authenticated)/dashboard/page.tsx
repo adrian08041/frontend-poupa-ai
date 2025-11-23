@@ -20,6 +20,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { toast } from "sonner";
 import { TransactionForm } from "@/app/(authenticated)/transactions/components/TransactionForm";
 import type { CreateTransactionData } from "@/lib/validator/transaction";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -189,6 +190,11 @@ export default function DashboardPage() {
       setCategoryExpenses(expenses);
     } catch (error) {
       console.error("Erro ao carregar dados do dashboard:", error);
+      
+      toast.error("Erro ao carregar dashboard", {
+        description: error instanceof Error ? error.message : "Erro desconhecido"
+      });
+      
       setError(
         error instanceof Error
           ? error.message
@@ -202,6 +208,7 @@ export default function DashboardPage() {
   // Função para criar nova transação
   async function handleCreateTransaction(data: CreateTransactionData) {
     await createTransaction(data);
+    toast.success("Transação criada com sucesso!");
   }
 
   // Função para formatar saldo com opção de ocultar

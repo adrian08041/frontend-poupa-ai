@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Power, Trash2, Repeat, DollarSign, Calendar, FileText, Tag, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 export default function RecurringTransactionsPage() {
   const [transactions, setTransactions] = useState<RecurringTransaction[]>([]);
@@ -58,6 +59,9 @@ export default function RecurringTransactionsPage() {
       setTransactions(data.recurringTransactions || []);
     } catch (error) {
       console.error("Erro ao carregar transações fixas:", error);
+      toast.error("Erro ao carregar transações fixas", {
+        description: error instanceof Error ? error.message : "Erro desconhecido"
+      });
       // Se falhar ao carregar, define array vazio para evitar erros na UI
       setTransactions([]);
     } finally {
@@ -70,18 +74,24 @@ export default function RecurringTransactionsPage() {
 
     // Validar amount
     if (!formData.amount || formData.amount <= 0 || isNaN(formData.amount)) {
-      alert("Por favor, insira um valor válido maior que zero");
+      toast.warning("Valor inválido", {
+        description: "Por favor, insira um valor maior que zero"
+      });
       return;
     }
 
     // Validar campos obrigatórios por frequência
     if (formData.frequency === "MONTHLY" && !formData.dayOfMonth) {
-      alert("Por favor, selecione o dia do mês para transações mensais");
+      toast.warning("Campo obrigatório", {
+        description: "Selecione o dia do mês para transações mensais"
+      });
       return;
     }
 
     if (formData.frequency === "WEEKLY" && formData.dayOfWeek === undefined) {
-      alert("Por favor, selecione o dia da semana para transações semanais");
+      toast.warning("Campo obrigatório", {
+        description: "Selecione o dia da semana para transações semanais"
+      });
       return;
     }
 
@@ -97,6 +107,9 @@ export default function RecurringTransactionsPage() {
 
       console.log('📋 Dados do formulário:', cleanedData);
       await createRecurringTransaction(cleanedData);
+
+      toast.success("Transação fixa criada com sucesso!");
+
       setIsDialogOpen(false);
       loadTransactions();
       setFormData({
@@ -108,16 +121,23 @@ export default function RecurringTransactionsPage() {
       });
     } catch (error) {
       console.error('Erro completo:', error);
-      alert(error instanceof Error ? error.message : "Erro ao criar transação fixa");
+      toast.error("Erro ao criar transação fixa", {
+        description: error instanceof Error ? error.message : "Erro desconhecido"
+      });
     }
   };
 
   const handleToggle = async (id: string) => {
     try {
       await toggleRecurringTransaction(id);
+
+      toast.success("Status alterado com sucesso");
+
       loadTransactions();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Erro ao alternar status");
+      toast.error("Erro ao alterar status", {
+        description: error instanceof Error ? error.message : "Erro desconhecido"
+      });
     }
   };
 
@@ -125,9 +145,14 @@ export default function RecurringTransactionsPage() {
     if (!confirm("Deseja realmente deletar esta transação fixa?")) return;
     try {
       await deleteRecurringTransaction(id);
+
+      toast.success("Transação fixa excluída");
+
       loadTransactions();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Erro ao deletar transação fixa");
+      toast.error("Erro ao excluir transação fixa", {
+        description: error instanceof Error ? error.message : "Erro desconhecido"
+      });
     }
   };
 

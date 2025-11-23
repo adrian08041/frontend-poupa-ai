@@ -9,8 +9,9 @@ import {
   CreateTransactionData,
 } from "@/lib/validator/transaction";
 import { Transaction } from "@/types/transaction";
-import { getTodayISO } from "@/lib/utils/format";
+import { getTodayISO, formatCurrency } from "@/lib/utils/format";
 import { extractTransactionFromImage } from "@/lib/api/transaction";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -273,6 +274,17 @@ export function TransactionForm({
       setConfidence(extractedData.confidence);
       setExtractionSuccess(true);
 
+      // Toast de sucesso com aviso se confiança baixa
+      if (extractedData.confidence < 70) {
+        toast.warning('Dados extraídos com baixa confiança', {
+          description: `Confiança: ${extractedData.confidence}% - Revise os dados antes de salvar`,
+        });
+      } else {
+        toast.success('Dados extraídos com sucesso!', {
+          description: `Confiança: ${extractedData.confidence}% - ${extractedData.description}`,
+        });
+      }
+
       // Limpar imagem após sucesso
       setSelectedImage(null);
       setImagePreview(null);
@@ -282,11 +294,16 @@ export function TransactionForm({
 
     } catch (error) {
       console.error('❌ Erro ao extrair dados:', error);
-      setExtractionError(
-        error instanceof Error
-          ? error.message
-          : 'Erro ao processar imagem. Tente novamente.'
-      );
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Erro ao processar imagem. Tente novamente.';
+      
+      setExtractionError(errorMessage);
+      
+      // Toast de erro
+      toast.error('Erro ao extrair dados da imagem', {
+        description: errorMessage,
+      });
     } finally {
       setIsExtracting(false);
     }
@@ -331,9 +348,27 @@ export function TransactionForm({
       setOpen(false);
       form.reset();
       setDisplayValue(''); // Limpa o valor formatado
+      
+      // Toast de sucesso
+      toast.success(
+        isEditing ? "Transação atualizada com sucesso!" : "Transação criada com sucesso!",
+        {
+          description: `${data.description} - ${formatCurrency(data.amount)}`,
+        }
+      );
+      
       onSuccess();
     } catch (error) {
       console.error("❌ Erro ao salvar transação:", error);
+      
+      // Toast de erro
+      toast.error(
+        isEditing ? "Erro ao atualizar transação" : "Erro ao criar transação",
+        {
+          description: error instanceof Error ? error.message : "Tente novamente mais tarde",
+        }
+      );
+      
       if (error instanceof Error) {
         console.error("❌ Mensagem completa:", error.message);
       }

@@ -23,6 +23,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ReportsPage() {
   const currentDate = new Date();
@@ -62,8 +63,17 @@ export default function ReportsPage() {
         includeComparison: true,
       });
       setReport(data);
+
+      toast.success("Relatório gerado com sucesso!", {
+        description: "Análise completa para " + selectedMonth + "/" + selectedYear
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao gerar relatório");
+      
+      toast.error("Erro ao gerar relatório", {
+        description: err instanceof Error ? err.message : "Erro desconhecido"
+      });
+      
       console.error("Erro ao gerar relatório:", err);
     } finally {
       setIsLoading(false);

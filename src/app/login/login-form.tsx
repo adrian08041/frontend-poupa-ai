@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { loginSchema, type LoginFormData } from "@/lib/validator/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,6 +64,11 @@ export function LoginForm() {
           result?.error ||
           (typeof result === "string" ? result : null) ||
           "Credenciais inválidas.";
+
+        toast.error("Erro ao fazer login", {
+          description: message
+        });
+
         throw new Error(message);
       }
 
@@ -80,12 +86,18 @@ export function LoginForm() {
         console.log("🔄 Refresh token salvo no localStorage");
       }
 
+
+      toast.success("Login realizado com sucesso!", {
+        description: "Bem-vindo de volta"
+      });
+
       router.push("/transactions");
     } catch (err) {
       console.error("❌ Erro no login:", err);
       const message =
         err instanceof Error ? err.message : "Erro inesperado ao fazer login. Tente novamente.";
       setError(message);
+      // Toast já foi mostrado no bloco de erro acima
     } finally {
       setIsLoading(false);
     }

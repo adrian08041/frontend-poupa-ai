@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {
@@ -38,10 +39,19 @@ export function LogoutButton() {
 
       console.log("✅ Logout realizado com sucesso");
 
+      toast.info("Logout realizado com sucesso", {
+        description: "Até logo!"
+      });
+
       
       router.push("/login");
     } catch (error) {
       console.error("❌ Erro no logout:", error);
+      
+      toast.warning("Erro ao fazer logout no servidor", {
+        description: "Você será desconectado localmente"
+      });
+      
       
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Lock, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -83,10 +84,15 @@ export function ProfileSettingsDialog({
       onProfileUpdate(data);
       setSuccessMessage("Perfil atualizado com sucesso!");
 
+      toast.success("Perfil atualizado com sucesso!");
+
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
+        toast.error("Erro", {
+          description: error.message
+        });
       }
     } finally {
       setIsLoading(false);
@@ -101,12 +107,17 @@ export function ProfileSettingsDialog({
     try {
       await changePassword(data);
       setSuccessMessage("Senha alterada com sucesso!");
+
+      toast.success("Senha alterada com sucesso!");
       passwordForm.reset();
 
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
+        toast.error("Erro", {
+          description: error.message
+        });
       }
     } finally {
       setIsLoading(false);
@@ -119,10 +130,18 @@ export function ProfileSettingsDialog({
 
     try {
       await deleteAccount();
+
+      toast.info("Conta excluída com sucesso", {
+        description: "Seus dados foram removidos"
+      });
+
       router.push("/login");
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(error.message);
+        toast.error("Erro", {
+          description: error.message
+        });
       }
       setIsLoading(false);
     }

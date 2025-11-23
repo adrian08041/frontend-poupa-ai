@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, Trash2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,10 +38,20 @@ export function DeleteDialog({
     try {
       await onDelete(transactionId);
       setOpen(false);
+      
+      // Toast de sucesso
+      toast.success("Transação excluída com sucesso!", {
+        description: `"${transactionDescription}" foi removida`,
+      });
+      
       onSuccess();
     } catch (error) {
       console.error("Erro ao excluir transação:", error);
-      // Aqui você pode adicionar um toast de erro
+      
+      // Toast de erro
+      toast.error("Erro ao excluir transação", {
+        description: error instanceof Error ? error.message : "Tente novamente mais tarde",
+      });
     } finally {
       setIsLoading(false);
     }

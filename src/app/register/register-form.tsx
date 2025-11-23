@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { registerSchema, type RegisterFormData } from "@/lib/validator/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,15 +82,34 @@ export function RegisterForm() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Erro ao cadastrar usuário");
+        const errorMessage = errorData?.message || "Erro ao cadastrar usuário";
+
+        // Toast específico para email duplicado
+        if (errorMessage.toLowerCase().includes("já existe") || errorMessage.toLowerCase().includes("já cadastrado")) {
+          toast.error("Este e-mail já está cadastrado", {
+            description: "Por favor, use outro e-mail ou faça login"
+          });
+        } else {
+          toast.error("Erro ao criar conta", {
+            description: errorMessage
+          });
+        }
+
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
       console.log("✅ Cadastro realizado com sucesso:", result);
 
+
+      toast.success("Conta criada com sucesso!", {
+        description: "Você será redirecionado para fazer login"
+      });
+
       router.push("/login");
     } catch (error) {
       console.error("❌ Erro no cadastro:", error instanceof Error ? error.message : error);
+      // Toast já foi mostrado dentro do if (!response.ok)
     } finally {
       setIsLoading(false);
     }
