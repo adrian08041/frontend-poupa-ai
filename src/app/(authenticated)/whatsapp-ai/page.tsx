@@ -69,7 +69,7 @@ function WhatsAppConnectSection() {
     >
       <Card 
         // LARGURA CORRIGIDA: Max-width para o Card no mobile.
-        className="shadow-2xl border-green dark:border-green/50 border-4 h-full flex flex-col bg-background-02 dark:bg-background-02 transition-all 
+        className="shadow-2xl border-green dark:border-green/50 border-4 h-full flex flex-col bg-white dark:bg-background-02 transition-all 
         hover:shadow-green-md w-full max-w-sm sm:max-w-md lg:max-w-lg" // Aumentei o max-w para ser um bloco de destaque maior em telas maiores que mobile
       >
         <CardHeader className="text-center ">
@@ -81,12 +81,12 @@ function WhatsAppConnectSection() {
               <Bot className="h-16 w-16 text-green" />
             </motion.div>
           </div>
-          <CardTitle className="text-3xl font-extrabold flex flex-col items-center justify-center gap-2 text-white">
+          <CardTitle className="text-3xl font-extrabold flex flex-col items-center justify-center gap-2 text-gray dark:text-white">
             <div className="flex items-center">
                 <MessageCircle className="h-8 w-8 text-green mr-2" />
                 PoupaAI Zap
             </div>
-            <span className="text-sm font-medium text-gray-400">Gerenciamento Rápido e Seguro</span>
+            <span className="text-sm font-medium text-gray dark:text-gray-400">Gerenciamento Rápido e Seguro</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-6 flex-grow p-6">
@@ -153,23 +153,23 @@ function FAQSection() {
             transition={{ delay: 0.8 }}
             className="space-y-6"
         >
-            <Card className="bg-background-02 dark:bg-background-02 border-dark-gray shadow-xl">
+            <Card className="bg-white dark:bg-background-02 border-light-gray dark:border-dark-gray shadow-xl">
                 <CardHeader>
-                    <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-white">
+                    <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray dark:text-white">
                         <HelpCircle className="h-6 w-6 text-green" />
                         Perguntas Frequentes (FAQ)
                     </CardTitle>
-                    <CardDescription className="text-gray-400 mt-2">
+                    <CardDescription className="text-gray dark:text-gray-400 mt-2">
                         Respostas rápidas para as principais dúvidas sobre a integração do PoupaAI com o WhatsApp.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {faqs.map((faq, index) => (
-                        <div key={index} className="p-4 bg-dark-green/30 rounded-lg border border-green/10">
-                            <h4 className="font-semibold text-white flex items-center gap-2 mb-1">
+                        <div key={index} className="p-4 bg-green/5 dark:bg-dark-green/30 rounded-lg border border-green/20 dark:border-green/10">
+                            <h4 className="font-semibold text-gray dark:text-white flex items-center gap-2 mb-1">
                                 {faq.icon} {faq.q}
                             </h4>
-                            <p className="text-sm text-gray-300 ml-7 leading-relaxed">{faq.a}</p>
+                            <p className="text-sm text-gray dark:text-gray-300 ml-7 leading-relaxed">{faq.a}</p>
                         </div>
                     ))}
                 </CardContent>
@@ -331,7 +331,7 @@ export default function WhatsappAiPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background-01 dark:bg-background-01 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-background-01 relative overflow-hidden">
         {/* Este é o nosso fundo dinâmico e brilhante! */}
         <ParticleEffect /> 
 
@@ -344,11 +344,11 @@ export default function WhatsappAiPage() {
                 variants={animationVariants}
                 className="text-center space-y-3 pt-8"
             >
-                <h1 className="text-4xl md:text-5xl font-extrabold text-white flex flex-col md:flex-row items-center justify-center gap-3">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-gray dark:text-white flex flex-col md:flex-row items-center justify-center gap-3">
                     <Zap className="h-8 w-8 md:h-10 md:w-10 text-green" />
                     <span className="text-green">PoupaAI Zap</span>: Gestão por Conversa
                 </h1>
-                <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-lg md:text-xl text-gray dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
                     A forma mais rápida de manter suas finanças em dia. Use a IA para registrar
                     transações enviando textos ou **fotos de cupons fiscais**.
                 </p>
@@ -372,13 +372,13 @@ export default function WhatsappAiPage() {
                     transition={{ delay: 0.2 }}
                     className="lg:col-span-3 space-y-8" // Ocupa a largura total para o fluxo de 6 passos
                 >
-                    <Card className="bg-background-02 dark:bg-background-02 border-dark-gray shadow-xl">
+                    <Card className="bg-white dark:bg-background-02 border-light-gray dark:border-dark-gray shadow-xl">
                         <CardHeader>
-                            <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-white">
+                            <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray dark:text-white">
                                 <Workflow className="h-6 w-6 text-green" />
                                 O Fluxo de Trabalho Integrado (IA + Automação)
                             </CardTitle>
-                            <CardDescription className="text-gray-400 mt-2">
+                            <CardDescription className="text-gray dark:text-gray-400 mt-2">
                                 Entenda como o PoupaAI Zap transforma sua mensagem em um registro financeiro em 6 passos, usando inteligência de ponta.
                             </CardDescription>
                         </CardHeader>
@@ -390,14 +390,14 @@ export default function WhatsappAiPage() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
-                                        className={cn("flex items-start gap-4 p-4 rounded-lg border border-green/10 transition-shadow hover:shadow-green-md", step.color)}
+                                        className={cn("flex items-start gap-4 p-4 rounded-lg border border-green/20 dark:border-green/10 transition-shadow hover:shadow-green-md bg-green/5 dark:bg-green/20")}
                                     >
-                                        <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 min-w-10 rounded-full bg-green/20 text-green">
+                                        <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 min-w-10 rounded-full bg-green/10 dark:bg-green/20 text-green">
                                             {step.icon}
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-lg text-white">{step.title}</h4>
-                                            <p className="text-sm text-gray-300 mt-1 leading-relaxed">{step.description}</p>
+                                            <h4 className="font-semibold text-lg text-gray dark:text-white">{step.title}</h4>
+                                            <p className="text-sm text-gray dark:text-gray-300 mt-1 leading-relaxed">{step.description}</p>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -422,25 +422,25 @@ export default function WhatsappAiPage() {
                 variants={animationVariants}
                 transition={{ delay: 0.5 }}
             >
-                <Card className="bg-background-02 dark:bg-background-02 border-dark-gray shadow-xl">
+                <Card className="bg-white dark:bg-background-02 border-light-gray dark:border-dark-gray shadow-xl">
                     <CardHeader>
-                        <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-white">
+                        <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray dark:text-white">
                             <Code className="h-6 w-6 text-green" />
                             Comandos e Extração (Texto e Foto)
                         </CardTitle>
-                        <CardDescription className="text-gray-400 mt-2">
+                        <CardDescription className="text-gray dark:text-gray-400 mt-2">
                             A Inteligência Artificial processa sua entrada. Você pode usar linguagem natural para registrar ou anexar uma imagem para extração de dados automática.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         {/* Abas de Comandos */}
-                        <div className="flex flex-wrap gap-2 mb-6 border-b border-dark-gray/50 pb-4">
+                        <div className="flex flex-wrap gap-2 mb-6 border-b border-light-gray dark:border-dark-gray/50 pb-4">
                             {Object.keys(exampleCommands).map((tab) => (
                                 <Button
                                     key={tab}
                                     variant={activeCommandTab === tab ? "default" : "outline"}
                                     className={cn(
-                                        activeCommandTab === tab ? "bg-green hover:bg-green/90 text-white" : "border-dark-gray text-light-gray hover:bg-dark-green/50",
+                                        activeCommandTab === tab ? "bg-green hover:bg-green/90 text-white" : "border-light-gray dark:border-dark-gray text-gray dark:text-light-gray hover:bg-green/5 dark:hover:bg-dark-green/50",
                                         "transition-colors text-sm md:text-base font-semibold"
                                     )}
                                     onClick={() => setActiveCommandTab(tab)}
@@ -458,16 +458,16 @@ export default function WhatsappAiPage() {
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                                    className="p-4 bg-dark-green/30 rounded-lg border border-green/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+                                    className="p-4 bg-green/5 dark:bg-dark-green/30 rounded-lg border border-green/20 dark:border-green/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
                                 >
                                     <div className="flex-1 space-y-1">
                                         <div className="flex items-center gap-2">
                                             {cmd.icon}
-                                            <span className="font-mono text-base font-semibold text-green-400 block md:inline-block">
+                                            <span className="font-mono text-base font-semibold text-green dark:text-green-400 block md:inline-block">
                                                 {cmd.command}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-gray-300 w-full md:w-auto mt-2 md:mt-0 leading-relaxed">
+                                        <p className="text-sm text-gray dark:text-gray-300 w-full md:w-auto mt-2 md:mt-0 leading-relaxed">
                                             {cmd.description}
                                         </p>
                                     </div>
@@ -484,7 +484,7 @@ export default function WhatsappAiPage() {
                             ))}
                         </div>
                     </CardContent>
-                    <CardFooter className="pt-6 border-t border-dark-gray/50 mt-6">
+                    <CardFooter className="pt-6 border-t border-light-gray dark:border-dark-gray/50 mt-6">
                         <p className="text-sm text-gray-500 italic flex items-center gap-2">
                             <Receipt className="h-4 w-4 text-gray" />
                             Minha dica é: use o WhatsApp para transações rápidas e pontuais, mas para despesas recorrentes, prefira a guia &apos;Fixas&apos; no app web!
@@ -507,34 +507,34 @@ export default function WhatsappAiPage() {
                 variants={animationVariants}
                 transition={{ delay: 0.7 }}
             >
-                <Card className="bg-background-02 dark:bg-background-02 border-dark-gray shadow-xl">
+                <Card className="bg-white dark:bg-background-02 border-light-gray dark:border-dark-gray shadow-xl">
                     <CardHeader>
-                        <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-white">
+                        <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-3 text-gray dark:text-white">
                             <ShieldCheck className="h-6 w-6 text-green" />
                             Segurança na Conversa
                         </CardTitle>
-                        <CardDescription className="text-gray-400 mt-2">
+                        <CardDescription className="text-gray dark:text-gray-400 mt-2">
                             Garantimos que seus dados permaneçam protegidos e confidenciais em todas as etapas da integração.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4 text-gray-300">
+                    <CardContent className="space-y-4 text-gray dark:text-gray-300">
                         <ul className="space-y-3">
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <span className="font-semibold text-white">Conexão Criptografada:</span> Usamos as melhores práticas de segurança para a comunicação entre a plataforma de automação e o Backend. Me sinto seguro com isso.
+                                    <span className="font-semibold text-gray dark:text-white">Conexão Criptografada:</span> Usamos as melhores práticas de segurança para a comunicação entre a plataforma de automação e o Backend. Me sinto seguro com isso.
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <span className="font-semibold text-white">Mapeamento Unitário:</span> Apenas seu número de telefone é mapeado ao seu perfil, eliminando o risco de transações em contas erradas.
+                                    <span className="font-semibold text-gray dark:text-white">Mapeamento Unitário:</span> Apenas seu número de telefone é mapeado ao seu perfil, eliminando o risco de transações em contas erradas.
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <span className="font-semibold text-white">Privacidade de Mídia:</span> As fotos de cupons fiscais são processadas só para extrair os dados financeiros e **não** são armazenadas após o registro. Isso é top!
+                                    <span className="font-semibold text-gray dark:text-white">Privacidade de Mídia:</span> As fotos de cupons fiscais são processadas só para extrair os dados financeiros e **não** são armazenadas após o registro. Isso é top!
                                 </div>
                             </li>
                         </ul>
