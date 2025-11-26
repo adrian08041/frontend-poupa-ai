@@ -11,8 +11,8 @@ import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 
 // Definições de constantes que usamos em múltiplos lugares (bom para manutenção!)
-const WHATSAPP_NUMBER_DISPLAY = "+55 38 9129-8970";
-const WHATSAPP_NUMBER_RAW = "553891298970";
+const WHATSAPP_NUMBER_DISPLAY = "+55 11 94044-6770";
+const WHATSAPP_NUMBER_RAW = "5511940446770";
 const INITIAL_MESSAGE = "Olá, eu quero começar a gerenciar minhas finanças com o PoupaAI!";
 
 /**

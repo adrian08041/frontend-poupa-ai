@@ -234,7 +234,7 @@ export function ProfileSettingsDialog({
       console.log('[handleOpenWhatsApp] Vinculação concluída com sucesso');
 
       // Se a vinculação foi bem-sucedida, abre o WhatsApp
-      const botNumber = "553891298970"; // Número do bot
+      const botNumber = "5511940446770"; // Número do bot
       const message = `Olá! Acabei de vincular minha conta ao PoupaAi!`;
       const whatsappUrl = `https://wa.me/${botNumber}?text=${encodeURIComponent(message)}`;
 
