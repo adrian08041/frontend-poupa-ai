@@ -350,7 +350,7 @@ export default function WhatsappAiPage() {
                 </h1>
                 <p className="text-lg md:text-xl text-gray dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
                     A forma mais rápida de manter suas finanças em dia. Use a IA para registrar
-                    transações enviando textos ou **fotos de cupons fiscais**.
+                    transações enviando textos ou fotos de cupons fiscais.
                 </p>
             </motion.div>
 
@@ -534,7 +534,7 @@ export default function WhatsappAiPage() {
                             <li className="flex items-start gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-green mt-0.5 flex-shrink-0" />
                                 <div>
-                                    <span className="font-semibold text-gray dark:text-white">Privacidade de Mídia:</span> As fotos de cupons fiscais são processadas só para extrair os dados financeiros e **não** são armazenadas após o registro. Isso é top!
+                                    <span className="font-semibold text-gray dark:text-white">Privacidade de Mídia:</span> As fotos de cupons fiscais são processadas só para extrair os dados financeiros e não são armazenadas após o registro. Isso é top!
                                 </div>
                             </li>
                         </ul>
