@@ -507,16 +507,11 @@ export default function DashboardPage() {
                       <span className="text-sm text-gray">Ganhos</span>
                     </div>
                     <span className="text-sm font-medium text-gray dark:text-white">
-                      {summary
-                        ? Math.round(
-                            (summary.totalIncome /
-                              (summary.totalIncome +
-                                summary.totalExpense +
-                                summary.totalInvestment)) *
-                              100
-                          )
-                        : 0}
-                      %
+                      {(() => {
+                        if (!summary) return "0%";
+                        const total = summary.totalIncome + summary.totalExpense + summary.totalInvestment;
+                        return total > 0 ? `${Math.round((summary.totalIncome / total) * 100)}%` : "0%";
+                      })()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -525,16 +520,11 @@ export default function DashboardPage() {
                       <span className="text-sm text-gray">Gastos</span>
                     </div>
                     <span className="text-sm font-medium text-gray dark:text-white">
-                      {summary
-                        ? Math.round(
-                            (summary.totalExpense /
-                              (summary.totalIncome +
-                                summary.totalExpense +
-                                summary.totalInvestment)) *
-                              100
-                          )
-                        : 0}
-                      %
+                      {(() => {
+                        if (!summary) return "0%";
+                        const total = summary.totalIncome + summary.totalExpense + summary.totalInvestment;
+                        return total > 0 ? `${Math.round((summary.totalExpense / total) * 100)}%` : "0%";
+                      })()}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -543,16 +533,11 @@ export default function DashboardPage() {
                       <span className="text-sm text-gray">Investimentos</span>
                     </div>
                     <span className="text-sm font-medium text-gray dark:text-white">
-                      {summary
-                        ? Math.round(
-                            (summary.totalInvestment /
-                              (summary.totalIncome +
-                                summary.totalExpense +
-                                summary.totalInvestment)) *
-                              100
-                          )
-                        : 0}
-                      %
+                      {(() => {
+                        if (!summary) return "0%";
+                        const total = summary.totalIncome + summary.totalExpense + summary.totalInvestment;
+                        return total > 0 ? `${Math.round((summary.totalInvestment / total) * 100)}%` : "0%";
+                      })()}
                     </span>
                   </div>
                 </div>

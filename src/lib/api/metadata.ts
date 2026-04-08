@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config";
+
 interface EnumsResponse {
   // Formato correto do backend
   transactionTypes?: string[];
@@ -11,7 +13,7 @@ interface EnumsResponse {
 
 export async function getEnums(): Promise<EnumsResponse> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/meta/enums`, {
+    const res = await fetch(`${API_BASE_URL}/meta/enums`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -21,18 +23,11 @@ export async function getEnums(): Promise<EnumsResponse> {
     });
 
     if (!res.ok) {
-      console.error(`❌ Erro HTTP ${res.status}: ${res.statusText}`);
       throw new Error(`Erro ao buscar enums: ${res.status}`);
     }
 
-    const data = await res.json();
-
-    console.log("📦 Resposta da API /meta/enums:", data);
-
-    return data;
-  } catch (error) {
-    console.error("❌ Erro ao buscar enums:", error);
-
+    return await res.json();
+  } catch {
     return {
       transactionTypes: [],
       transactionCategories: [],
@@ -42,27 +37,10 @@ export async function getEnums(): Promise<EnumsResponse> {
 }
 
 export function normalizeEnums(data: EnumsResponse) {
-  console.log("🔧 Normalizando enums, dados recebidos:", data);
-
   const transactionTypes = data.transactionTypes || data.TransactionType || [];
-
-  const categories =
-    data.transactionCategories || // ✅ Nome correto!
-    data.Category ||
-    [];
-
+  const categories = data.transactionCategories || data.Category || [];
   const paymentMethods = data.paymentMethods || data.PaymentMethod || [];
 
-  console.log("🔧 Resultado da normalização:", {
-    transactionTypes,
-    categories,
-    paymentMethods,
-  });
-
-  return {
-    transactionTypes,
-    categories,
-    paymentMethods,
-  };
+  return { transactionTypes, categories, paymentMethods };
 }
 

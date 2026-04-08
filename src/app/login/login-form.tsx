@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api/config";
 
 export function LoginForm() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export function LoginForm() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
+        `${API_BASE_URL}/users/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -64,7 +65,7 @@ export function LoginForm() {
         description: "Bem-vindo de volta"
       });
 
-      router.push("/transactions");
+      router.push("/dashboard");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Erro inesperado ao fazer login. Tente novamente.";
@@ -173,13 +174,6 @@ export function LoginForm() {
         </Form>
 
         <div className="space-y-4">
-          <Link
-            href="/forgot-password"
-            className="text-sm font-medium text-[#39BE00] hover:underline inline-block"
-          >
-            Esqueceu sua senha?
-          </Link>
-
           <p className="text-base text-gray-400">
             Não tem cadastro?{" "}
             <Link

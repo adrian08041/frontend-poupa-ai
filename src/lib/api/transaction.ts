@@ -10,8 +10,7 @@ import {
 } from "@/lib/validator/transaction";
 import { ReportResponse } from "@/types/report";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { API_BASE_URL } from "./config";
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const response = await fetch(url, {

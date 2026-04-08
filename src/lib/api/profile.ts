@@ -1,7 +1,6 @@
 import { ProfileFormData, ChangePasswordFormData } from "../validator/profile";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+import { API_BASE_URL } from "./config";
 
 export class ProfileError extends Error {
   constructor(public message: string, public status?: number) {
@@ -14,7 +13,7 @@ const AUTH_HEADERS: HeadersInit = { "Content-Type": "application/json" };
 const AUTH_OPTIONS: RequestInit = { credentials: "include" };
 
 export async function getProfile() {
-  const response = await fetch(`${API_BASE_URL}/users/profile`, {
+  const response = await fetch(`${API_BASE_URL}/users/me`, {
     method: "GET",
     headers: AUTH_HEADERS,
     ...AUTH_OPTIONS,

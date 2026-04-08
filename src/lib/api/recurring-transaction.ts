@@ -5,8 +5,7 @@ import {
 } from '@/types/recurring-transaction';
 import { reaisToCents } from '@/lib/utils/format';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+import { API_BASE_URL } from './config';
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const response = await fetch(url, {

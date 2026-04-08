@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "@/lib/api/config";
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -68,7 +69,7 @@ export function RegisterForm() {
       const { confirmPassword, ...registerData } = data;
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users`, // <- rota real do seu backend
+        `${API_BASE_URL}/users`,
         {
           method: "POST",
           headers: {
@@ -294,7 +295,7 @@ export function RegisterForm() {
                     <FormLabel className="text-sm text-gray font-normal cursor-pointer">
                       Eu aceito os{" "}
                       <Link
-                        href="/terms"
+                        href="#"
                         className="text-[#39BE00] hover:underline"
                         target="_blank"
                       >
@@ -302,7 +303,7 @@ export function RegisterForm() {
                       </Link>{" "}
                       e a{" "}
                       <Link
-                        href="/privacy"
+                        href="#"
                         className="text-[#39BE00] hover:underline"
                         target="_blank"
                       >
