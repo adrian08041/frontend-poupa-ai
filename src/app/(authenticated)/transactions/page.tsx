@@ -50,20 +50,9 @@ export default function TransactionsPage() {
     }
   }, [router]);
 
-  // Verificar autenticação e carregar transações
   useEffect(() => {
-    // Verifica se tem token no localStorage
-    const token =
-      typeof window !== "undefined" && localStorage.getItem("access_token");
-
-    if (!token) {
-      console.warn("⚠️ Usuário não autenticado, redirecionando para login...");
-      router.push("/login");
-      return;
-    }
-
     loadTransactions();
-  }, [router, loadTransactions]);
+  }, [loadTransactions]);
 
   async function handleCreate(data: CreateTransactionData) {
     await createTransaction(data);

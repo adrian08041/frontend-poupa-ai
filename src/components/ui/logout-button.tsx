@@ -14,47 +14,20 @@ export function LogoutButton() {
     setIsLoading(true);
 
     try {
-      
-      const accessToken = localStorage.getItem("access_token");
-      const refreshToken = localStorage.getItem("refresh_token");
-
-      // Se tiver refresh_token, faz logout no backend
-      if (refreshToken) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/logout`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ refresh_token: refreshToken }),
-        }).catch((error) => {
-          
-          console.warn("Erro ao fazer logout no backend:", error);
-        });
-      }
-
-      // Limpar tokens do localStorage
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-
-      console.log("✅ Logout realizado com sucesso");
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
 
       toast.info("Logout realizado com sucesso", {
         description: "Até logo!"
       });
 
-      
       router.push("/login");
-    } catch (error) {
-      console.error("❌ Erro no logout:", error);
-      
+    } catch {
       toast.warning("Erro ao fazer logout no servidor", {
         description: "Você será desconectado localmente"
       });
-      
-      
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
       router.push("/login");
     } finally {
       setIsLoading(false);

@@ -8,33 +8,17 @@ import { reaisToCents } from '@/lib/utils/format';
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-function getAuthToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('access_token');
-}
-
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
-  const token = getAuthToken();
-
-  if (!token) {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
-    throw new Error('Usuário não autenticado');
-  }
-
   const response = await fetch(url, {
     ...options,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
       ...options.headers,
     },
   });
 
   if (response.status === 401) {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
     }
@@ -42,29 +26,9 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   }
 
   if (!response.ok) {
-    let errorData = null;
-    let errorText = '';
-
-    try {
-      const responseText = await response.text();
-      errorText = responseText;
-      if (responseText) {
-        errorData = JSON.parse(responseText);
-      }
-    } catch (e) {
-      console.error('Erro ao parsear resposta:', e);
-    }
-
-    console.error('❌ Erro na API:', {
-      url,
-      status: response.status,
-      statusText: response.statusText,
-      errorData,
-      errorText,
-    });
-
+    const errorData = await response.json().catch(() => null);
     throw new Error(
-      errorData?.message || errorData?.error || `Erro na requisição: ${response.status} - ${response.statusText}`
+      errorData?.message || `Erro na requisição: ${response.status}`
     );
   }
 
@@ -76,7 +40,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
 }
 
 export async function listRecurringTransactions(): Promise<ListRecurringTransactionsResponse> {
-  console.log('🔍 Buscando transações em:', `${API_BASE_URL}/recurring-transactions`);
   return fetchWithAuth(`${API_BASE_URL}/recurring-transactions`);
 }
 
@@ -85,10 +48,8 @@ export async function createRecurringTransaction(
 ): Promise<RecurringTransaction> {
   const payload = {
     ...data,
-    amount: reaisToCents(data.amount), // Converter para centavos
+    amount: reaisToCents(data.amount),
   };
-
-  console.log('📤 Enviando transação recorrente:', payload);
 
   return fetchWithAuth(`${API_BASE_URL}/recurring-transactions`, {
     method: 'POST',

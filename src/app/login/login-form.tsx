@@ -38,54 +38,27 @@ export function LoginForm() {
     setError(null);
 
     try {
-      console.log("📤 Enviando login para o backend:", data.email);
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify(data),
         }
       );
 
-      let result = null;
-      try {
-        result = await response.json();
-      } catch {
-        console.warn("⚠️ Resposta não era JSON. Usando texto.");
-      }
+      const result = await response.json().catch(() => null);
 
       if (!response.ok) {
         const message =
           result?.message ||
           result?.error ||
-          (typeof result === "string" ? result : null) ||
           "Credenciais inválidas.";
 
-        toast.error("Erro ao fazer login", {
-          description: message
-        });
-
+        toast.error("Erro ao fazer login", { description: message });
         throw new Error(message);
       }
-
-      console.log("✅ Login bem-sucedido:", result);
-
-      const accessToken = result?.accessToken || result?.authToken;
-      const refreshToken = result?.refreshToken;
-
-      if (accessToken) {
-        localStorage.setItem("access_token", accessToken);
-        console.log("🔑 Access token salvo no localStorage");
-      }
-      if (refreshToken) {
-        localStorage.setItem("refresh_token", refreshToken);
-        console.log("🔄 Refresh token salvo no localStorage");
-      }
-
 
       toast.success("Login realizado com sucesso!", {
         description: "Bem-vindo de volta"
@@ -93,11 +66,9 @@ export function LoginForm() {
 
       router.push("/transactions");
     } catch (err) {
-      console.error("❌ Erro no login:", err);
       const message =
         err instanceof Error ? err.message : "Erro inesperado ao fazer login. Tente novamente.";
       setError(message);
-      // Toast já foi mostrado no bloco de erro acima
     } finally {
       setIsLoading(false);
     }

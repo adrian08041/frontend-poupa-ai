@@ -31,14 +31,9 @@ export function UserProfileCard() {
 
   const loadUserData = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
-
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
       const response = await fetch(`${API_BASE_URL}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include",
       });
 
       if (response.ok) {

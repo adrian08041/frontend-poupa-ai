@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 export class ApiError extends Error {
   constructor(
@@ -15,11 +15,8 @@ export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = localStorage.getItem("access_token");
-
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
 
@@ -27,19 +24,13 @@ export async function apiRequest<T>(
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
+      credentials: "include",
     });
 
-    // Se token expirado ou inválido, redireciona para login
     if (response.status === 401) {
-      console.error("❌ Token inválido ou expirado");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-
-      // Redireciona para login
       if (typeof window !== "undefined") {
         window.location.href = "/login";
       }
-
       throw new ApiError("Credenciais inválidas. Faça o login novamente", 401);
     }
 
@@ -52,7 +43,6 @@ export async function apiRequest<T>(
       );
     }
 
-    // Se for DELETE sem conteúdo, retorna objeto vazio
     if (response.status === 204 || options.method === "DELETE") {
       return {} as T;
     }

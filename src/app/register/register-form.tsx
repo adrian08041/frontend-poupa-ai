@@ -67,8 +67,6 @@ export function RegisterForm() {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...registerData } = data;
 
-      console.log("📤 Enviando dados para o backend:", registerData);
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/users`, // <- rota real do seu backend
         {
